@@ -29,6 +29,7 @@ def get_expenses_count() -> int:
         # The header is ignored and only non-empty lines are counted.
         return sum(1 for line in file if line.strip()) - 1
 
+
 def read_expenses() -> list:
     with open(CSV_FILE_PATH, "r", newline="") as file:
         reader = csv.DictReader(file)

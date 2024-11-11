@@ -4,7 +4,7 @@ from services import add_expense, delete_expense
 
 
 @click.group()
-@click.version_option(version="0.3.0", prog_name="Expense Tracker CLI")
+@click.version_option(version="0.4.0", prog_name="Expense Tracker CLI")
 def cli():
     pass
 
