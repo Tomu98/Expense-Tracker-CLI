@@ -1,4 +1,5 @@
-from data_manager import initialize_csv, save_expense, get_expenses_count
+import csv
+from data_manager import CSV_FILE_PATH, FIELD_NAMES, initialize_csv, save_expense, get_expenses_count, read_expenses
 from datetime import datetime
 
 
@@ -19,3 +20,18 @@ def add_expense(category: str, description: str, amount: float):
 
     save_expense(expense)
     return new_id
+
+
+def delete_expense(expense_id: str):
+    expenses = read_expenses()
+    updated_expenses = [expense for expense in expenses if expense["ID"] != expense_id]
+
+    if len(updated_expenses) == len(expenses):
+        return False
+
+    with open(CSV_FILE_PATH, "w", newline="") as file:
+        writer = csv.DictWriter(file, fieldnames=FIELD_NAMES)
+        writer.writeheader()
+        writer.writerows(updated_expenses)
+
+    return True
