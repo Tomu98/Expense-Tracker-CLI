@@ -7,8 +7,9 @@ from data_manager import *
 
 
 
+# Commands
 @click.group()
-@click.version_option(version="0.5.0", prog_name="Expense Tracker CLI")
+@click.version_option(version="0.6.0", prog_name="Expense Tracker CLI")
 def cli():
     pass
 
@@ -91,13 +92,41 @@ def update_expense(expense_id, new_date, new_category, new_description, new_amou
 
 # Delete expense
 @click.command()
-@click.option("--id", prompt="ID", help="ID of the expense to delete")
-def delete_expense(id):
+@click.option("--id", help="ID of the expense to delete.", required=False)
+@click.option("--all", is_flag=True, help="Delete all expenses.")
+def delete_expense(id, all):
+    if all:
+        while True:
+            confirmation = click.prompt(
+                "Are you sure you want to delete all expenses? (y/n)", 
+                type=str, 
+                default="n"
+            ).lower()
+
+            if confirmation in ["y", "yes"]:
+                try:
+                    with open(CSV_FILE_PATH, "w", newline="") as file:
+                        writer = csv.DictWriter(file, fieldnames=FIELD_NAMES)
+                        writer.writeheader()
+                    click.echo("All expenses have been deleted successfully.")
+                except Exception as e:
+                    click.echo(f"Error when deleting all expenses: {e}")
+                return
+            elif confirmation in ["n", "no"]:
+                click.echo("Deletion cancelled.")
+                return
+            else:
+                click.echo("Please enter a valid response: 'y' or 'n' (or 'yes'/'no').")
+
+    if not id:
+        click.echo("Error: You must provide an ID with --id or use --all to delete all expenses.")
+        return
+
     try:
         with open(CSV_FILE_PATH, "r", newline="") as file:
             reader = csv.DictReader(file)
             expenses = list(reader)
-        
+
         updated_expenses = [expense for expense in expenses if expense["ID"] != id]
 
         if len(updated_expenses) == len(expenses):
@@ -203,4 +232,3 @@ if __name__ == '__main__':
 
 # Poner categorias disponibles para que no pongan cualquier cosa
 # Lo mismo con la descripcion y el monto
-# El id falla, como si al haber cambiado todo no se sumo o algo...
