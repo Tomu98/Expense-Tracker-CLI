@@ -9,7 +9,7 @@ from data_manager import *
 
 # Commands
 @click.group()
-@click.version_option(version="0.6.2", prog_name="Expense Tracker CLI")
+@click.version_option(version="0.6.3", prog_name="Expense Tracker CLI")
 def cli():
     pass
 
@@ -33,8 +33,10 @@ def add_expense(category, description, amount):
 
     # Validate amount
     try:
-        if amount < 0:
-            raise ValueError("Amount must be a positive number.")
+        if amount <= 0:
+            raise ValueError("Amount must be a positive number and higher than 0.")
+        if amount > 100000:
+            raise ValueError(f"Amount exceeds the maximum limit of $100000.")
     except ValueError as e:
         click.echo(f"Error: {e}")
         return
@@ -48,7 +50,7 @@ def add_expense(category, description, amount):
             click.echo(f"Error: Description must be no more than 100 characters.")
             return
     else:
-        description = "[No description provided]"
+        description = "..."
 
     # Generate new expense ID and date
     new_id = get_expenses_count() + 1
@@ -281,7 +283,6 @@ if __name__ == '__main__':
     cli()
 
 
-# Agregar validaciones para las funciones
 # Falta para filtrar gastos por categoria
 # Falta para permitir a los usuarios establecer un presupuesto para cada mes
 # y mostrar una advertencia cuando el usuario supere el presupuesto
@@ -291,17 +292,20 @@ if __name__ == '__main__':
 # Agregar tests
 # Agregar estilos con rich
 
-# Add expense:
-# - Creo que está todo bien de momento
 
 # Update expense:
 # - Comprobar posibles fallos
+# - Hacer que lo de actulizar lo que sea del gasto sea opcional y preguntando si está seguro de actualizar
+# - Asegurar que tengan las mismas validaciones de los datos en amount, description, category y date
+# 
 
 # Delete expense:
 # - Comprobar que todo esté bien
-
-# Summary
-# - Comprobar que todo esté bien
+# - posiblemente agregar para borrar por fecha
 
 # List
+# - Comprobar que todo esté bien
+# - Le podria agregar que filtre por categoria, fecha o monto especifico
+
+# Summary
 # - Comprobar que todo esté bien
