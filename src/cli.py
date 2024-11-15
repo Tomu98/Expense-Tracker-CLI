@@ -9,20 +9,48 @@ from data_manager import *
 
 # Commands
 @click.group()
-@click.version_option(version="0.6.1", prog_name="Expense Tracker CLI")
+@click.version_option(version="0.6.2", prog_name="Expense Tracker CLI")
 def cli():
     pass
 
 
+VALID_CATEGORIES = ["Groceries", "Leisure", "Electronics", "Utilities", "Clothing", "Health", "Others"]
+
 
 # Add expense
 @click.command()
-@click.option("--category", prompt="Category", help="Category of the expense.")
-@click.option("--description", prompt="Description", help="Expense description.")
+@click.option("--category", type=str, prompt="Category", help="Category of the expense.")
+@click.option("--description", default=None, help="Expense description.")
 @click.option("--amount", type=float, prompt="Amount", help="Amount of the expense.")
 def add_expense(category, description, amount):
     initialize_csv()
 
+    # Validate category
+    category = category.capitalize()
+    if category not in VALID_CATEGORIES:
+        click.echo("Invalid category. Choose from: " + ", ".join(VALID_CATEGORIES))
+        return
+
+    # Validate amount
+    try:
+        if amount < 0:
+            raise ValueError("Amount must be a positive number.")
+    except ValueError as e:
+        click.echo(f"Error: {e}")
+        return
+
+    # Validate description
+    if description:
+        if len(description) < 3:
+            click.echo(f"Error: Description must be at least 3 characters.")
+            return
+        elif len(description) > 100:
+            click.echo(f"Error: Description must be no more than 100 characters.")
+            return
+    else:
+        description = "[No description provided]"
+
+    # Generate new expense ID and date
     new_id = get_expenses_count() + 1
     expense_date = datetime.now().strftime("%Y-%m-%d")
 
@@ -35,7 +63,8 @@ def add_expense(category, description, amount):
     }
 
     save_expense(expense)
-    click.echo(f"Expense added successfully (ID: {new_id})")
+
+    click.echo(f"Expense added successfully (ID: {new_id}, Category: '{category}', Amount: ${amount:.2f})")
 
 
 
@@ -252,6 +281,27 @@ if __name__ == '__main__':
     cli()
 
 
-# Poner categorias disponibles para que no pongan cualquier cosa
-# Lo mismo con la descripcion y el monto
 # Agregar validaciones para las funciones
+# Falta para filtrar gastos por categoria
+# Falta para permitir a los usuarios establecer un presupuesto para cada mes
+# y mostrar una advertencia cuando el usuario supere el presupuesto
+# Falta permitir a los usuarios exportar gastos a un archivo CSV
+
+# Ver si puedo modularizar más el código
+# Agregar tests
+# Agregar estilos con rich
+
+# Add expense:
+# - Creo que está todo bien de momento
+
+# Update expense:
+# - Comprobar posibles fallos
+
+# Delete expense:
+# - Comprobar que todo esté bien
+
+# Summary
+# - Comprobar que todo esté bien
+
+# List
+# - Comprobar que todo esté bien
