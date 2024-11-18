@@ -8,6 +8,8 @@ CSV_FILE_PATH = os.path.join("data", "expenses.csv")
 FIELD_NAMES = ["ID", "Date", "Description", "Category", "Amount"]
 
 
+VALID_CATEGORIES = ["Groceries", "Leisure", "Electronics", "Utilities", "Clothing", "Health", "Others"]
+
 
 def initialize_csv():
     try:
