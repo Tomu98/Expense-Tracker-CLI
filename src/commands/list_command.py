@@ -42,3 +42,7 @@ def list_expenses():
 
     console = Console()
     console.print(table)
+
+# List
+# - Comprobar que todo esté bien
+# - Le podria agregar que filtre por categoria, fecha o monto especifico (rango de monto)

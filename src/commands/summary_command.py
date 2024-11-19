@@ -52,3 +52,12 @@ def summary(month, year):
         click.echo(f"Total expenses for {target_year}: ${filtered_expense:.2f}")
     else:
         click.echo(f"Total expenses: ${total_expense:.2f}")
+
+# Summary
+# - Comprobar que todo esté bien
+# - Lo que vi:
+# --- Al agregar "--year " y un año que no tiene gasto, lanzar solo un mensaje que diga que no se encontró gastos
+#     lo que hace ahora es solo lanzar el monto a $0.00, lo mismo si se busca con "--year" y "--month"
+# --- Agregar validaciones al poner "--year" asi no pongan numeros negativos o si es posible, fechas futuras que no pasaron
+# --- Ver si puedo hacer que "--year" y "--month" al no recibir un número, que comprueben el año o mes actual
+# --- Agregar resumen por categoria? también junto con year y month agregados

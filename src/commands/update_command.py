@@ -60,8 +60,15 @@ def update_expense(id, new_date, new_category, new_description, new_amount):
             writer.writerows(expenses)
 
         click.echo(f"Expense with ID {id} successfully updated.")
-    
+
     except FileNotFoundError:
         click.echo("Error: Expense file not found.")
     except Exception as e:
         click.echo(f"Error updating expense: {e}")
+
+# Update expense:
+# - Comprobar posibles fallos
+# - Hacer que lo de actualizar lo que sea del gasto sea opcional y preguntando si está seguro de actualizar
+# - Asegurar que tengan las mismas validaciones de los datos en amount, description, category y date
+# Lo que ví:
+# --- La fecha mejor ver que no reciba una futura que no pasó aún

@@ -51,8 +51,17 @@ def delete_expense(id, all):
             writer.writerows(updated_expenses)
 
         click.echo(f"Expense with ID {id} has been deleted successfully.")
-    
+
     except FileNotFoundError:
         click.echo("Error: Expense file not found.")
     except Exception as e:
         click.echo(f"Error when eliminating expense: {e}")
+
+# Delete expense:
+# - Comprobar que todo esté bien
+# - posiblemente agregar para borrar por fecha
+# --- Por dia en especifico, mes o año
+# - Lo que ví:
+# --- Agregar mensaje de que no se permite id negativos
+# --- Agregar validacion para que no agreguen cualquier id
+# --- Agregar mensaje de confirmación al querer borrar un gasto por id
