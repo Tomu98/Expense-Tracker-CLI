@@ -10,8 +10,8 @@ def delete_expense(id, all):
     if all:
         while True:
             confirmation = click.prompt(
-                "Are you sure you want to delete all expenses? (y/n)", 
-                type=str, 
+                "Are you sure you want to delete all expenses? (y/n)",
+                type=str,
                 default="n"
             ).lower()
 
@@ -30,9 +30,8 @@ def delete_expense(id, all):
             else:
                 click.echo("Please enter a valid response: 'y' or 'n' (or 'yes'/'no').")
 
-    if not id:
-        click.echo("Error: You must provide an ID with --id or use --all to delete all expenses.")
-        return
+    if not id or int(id) <= 0:
+        raise click.BadParameter("You must provide a valid positive ID.", param_hint="'--id'")
 
     try:
         with open(CSV_FILE_PATH, "r", newline="") as file:
@@ -62,6 +61,8 @@ def delete_expense(id, all):
 # - posiblemente agregar para borrar por fecha
 # --- Por dia en especifico, mes o año
 # - Lo que ví:
-# --- Agregar mensaje de que no se permite id negativos
-# --- Agregar validacion para que no agreguen cualquier id
-# --- Agregar mensaje de confirmación al querer borrar un gasto por id
+# --- Posiblemente agregar mensaje de confirmación al querer borrar un gasto por id
+# --- Si no hay gastos, y quiero ejecturar "delete --all", me pregunta si quiero hacerlo
+# --- pero no debería ya que no hay gastos, arreglar esto así primero se compruebe que
+# --- haya gastos y ahí recien preguntar
+# --- Lo mismo si es que agrego el mensaje con "--id"

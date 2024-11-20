@@ -1,6 +1,7 @@
 import click
 import csv
-from data_manager import CSV_FILE_PATH, FIELD_NAMES, VALID_CATEGORIES
+from utils.constants import VALID_CATEGORIES
+from data_manager import CSV_FILE_PATH, FIELD_NAMES
 from datetime import datetime
 
 

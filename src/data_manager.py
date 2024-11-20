@@ -22,7 +22,11 @@ def save_expense(expense: Dict[str, str]):
         writer.writerow(expense)
 
 
-def get_expenses_count() -> int:
-    with open(CSV_FILE_PATH, "r", newline="") as file:
-        # The header is ignored and only non-empty lines are counted.
-        return sum(1 for line in file if line.strip()) - 1
+def get_next_expense_id() -> int:
+    try:
+        with open(CSV_FILE_PATH, "r", newline="") as file:
+            reader = csv.DictReader(file)
+            ids = [int(row["ID"]) for row in reader if row["ID"].isdigit()]
+            return max(ids, default=0) + 1
+    except FileNotFoundError:
+        return 1

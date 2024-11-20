@@ -1,6 +1,6 @@
 import click
 from utils.validators import validate_category, validate_description, validate_amount
-from data_manager import initialize_csv, save_expense, get_expenses_count
+from data_manager import initialize_csv, save_expense, get_next_expense_id
 from datetime import datetime
 
 
@@ -11,12 +11,13 @@ from datetime import datetime
 def add_expense(category, description, amount):
     initialize_csv()
 
+    # Validations
     category = validate_category(category)
     description = validate_description(description)
     amount = validate_amount(amount)
 
     # Generate new expense ID and date
-    new_id = get_expenses_count() + 1
+    new_id = get_next_expense_id()
     expense_date = datetime.now().strftime("%Y-%m-%d")
 
     expense = {
