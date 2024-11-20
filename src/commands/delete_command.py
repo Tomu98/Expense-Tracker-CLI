@@ -7,36 +7,40 @@ from data_manager import CSV_FILE_PATH, FIELD_NAMES
 @click.option("--id", help="ID of the expense to delete.", required=False)
 @click.option("--all", is_flag=True, help="Delete all expenses.")
 def delete_expense(id, all):
-    if all:
-        while True:
-            confirmation = click.prompt(
-                "Are you sure you want to delete all expenses? (y/n)",
-                type=str,
-                default="n"
-            ).lower()
-
-            if confirmation in ["y", "yes"]:
-                try:
-                    with open(CSV_FILE_PATH, "w", newline="") as file:
-                        writer = csv.DictWriter(file, fieldnames=FIELD_NAMES)
-                        writer.writeheader()
-                    click.echo("All expenses have been deleted successfully.")
-                except Exception as e:
-                    click.echo(f"Error when deleting all expenses: {e}")
-                return
-            elif confirmation in ["n", "no"]:
-                click.echo("Deletion cancelled.")
-                return
-            else:
-                click.echo("Please enter a valid response: 'y' or 'n' (or 'yes'/'no').")
-
-    if not id or int(id) <= 0:
-        raise click.BadParameter("You must provide a valid positive ID.", param_hint="'--id'")
-
     try:
         with open(CSV_FILE_PATH, "r", newline="") as file:
             reader = csv.DictReader(file)
             expenses = list(reader)
+
+        if not expenses:
+            click.echo("No expenses found. Nothing to delete.")
+            return
+
+        if all:
+            while True:
+                confirmation = click.prompt(
+                    "Are you sure you want to delete all expenses? (y/n)",
+                    type=str,
+                    default="n"
+                ).lower()
+
+                if confirmation in ["y", "yes"]:
+                    try:
+                        with open(CSV_FILE_PATH, "w", newline="") as file:
+                            writer = csv.DictWriter(file, fieldnames=FIELD_NAMES)
+                            writer.writeheader()
+                        click.echo("All expenses have been deleted successfully.")
+                    except Exception as e:
+                        click.echo(f"Error when deleting all expenses: {e}")
+                    return
+                elif confirmation in ["n", "no"]:
+                    click.echo("Deletion cancelled.")
+                    return
+                else:
+                    click.echo("Please enter a valid response: 'y' or 'n' (or 'yes'/'no').")
+
+        if not id or int(id) <= 0:
+            raise click.BadParameter("You must provide a valid positive ID.", param_hint="'--id'")
 
         updated_expenses = [expense for expense in expenses if expense["ID"] != id]
 
@@ -55,14 +59,3 @@ def delete_expense(id, all):
         click.echo("Error: Expense file not found.")
     except Exception as e:
         click.echo(f"Error when eliminating expense: {e}")
-
-# Delete expense:
-# - Comprobar que todo esté bien
-# - posiblemente agregar para borrar por fecha
-# --- Por dia en especifico, mes o año
-# - Lo que ví:
-# --- Posiblemente agregar mensaje de confirmación al querer borrar un gasto por id
-# --- Si no hay gastos, y quiero ejecturar "delete --all", me pregunta si quiero hacerlo
-# --- pero no debería ya que no hay gastos, arreglar esto así primero se compruebe que
-# --- haya gastos y ahí recien preguntar
-# --- Lo mismo si es que agrego el mensaje con "--id"

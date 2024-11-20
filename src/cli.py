@@ -7,7 +7,7 @@ from commands.summary_command import summary
 
 
 @click.group()
-@click.version_option(version="0.8.1", prog_name="Expense Tracker CLI")
+@click.version_option(version="0.8.3", prog_name="Expense Tracker CLI")
 def cli():
     pass
 
