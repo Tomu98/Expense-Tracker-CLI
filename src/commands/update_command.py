@@ -1,8 +1,7 @@
 import click
 import csv
-from utils.constants import VALID_CATEGORIES
+from utils.validators import validate_date, validate_category, validate_description, validate_amount
 from data_manager import CSV_FILE_PATH, FIELD_NAMES
-from datetime import datetime
 
 
 @click.command()
@@ -23,31 +22,16 @@ def update_expense(id, new_date, new_category, new_description, new_amount):
                 expense_found = True
 
                 if new_date:
-                    try:
-                        datetime.strptime(new_date, "%Y-%m-%d")
-                        expense["Date"] = new_date
-                    except ValueError:
-                        click.echo("Invalid date format. Use YYYY-MM-DD.")
-                        return
+                    expense["Date"] = validate_date(new_date)
 
                 if new_category:
-                    new_category = new_category.capitalize()
-                    if new_category not in VALID_CATEGORIES:
-                        click.echo("Invalid category. Choose from: " + ", ".join(VALID_CATEGORIES))
-                        return
-                    expense["Category"] = new_category
+                    expense["Category"] = validate_category(new_category)
 
                 if new_description:
-                    if len(new_description) < 3 or len(new_description) > 100:
-                        click.echo("Description must be between 3 and 100 characters.")
-                        return
-                    expense["Description"] = new_description
+                    expense["Description"] = validate_description(new_description)
 
                 if new_amount is not None:
-                    if new_amount <= 0 or new_amount > 100000:
-                        click.echo("Amount must be a positive number between 0 and 100,000.")
-                        return
-                    expense["Amount"] = f"{new_amount:.2f}"
+                    expense["Amount"] = f"{validate_amount(new_amount):.2f}"
 
                 break
 
@@ -64,12 +48,7 @@ def update_expense(id, new_date, new_category, new_description, new_amount):
 
     except FileNotFoundError:
         click.echo("Error: Expense file not found.")
+    except click.BadParameter as e:
+        click.echo(f"Validation error: {e}")
     except Exception as e:
         click.echo(f"Error updating expense: {e}")
-
-# Update expense:
-# - Comprobar posibles fallos
-# - Hacer que lo de actualizar lo que sea del gasto sea opcional y preguntando si está seguro de actualizar
-# - Asegurar que tengan las mismas validaciones de los datos en amount, description, category y date
-# Lo que ví:
-# --- La fecha mejor ver que no reciba una futura que no pasó aún

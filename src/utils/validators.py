@@ -1,5 +1,25 @@
 import click
+from datetime import datetime
 from utils.constants import VALID_CATEGORIES
+
+
+
+def validate_date(date: str):
+    try:
+        parsed_date = datetime.strptime(date, "%Y-%m-%d")
+
+        today = datetime.now().date()
+
+        if parsed_date.date() > today:
+            raise click.BadParameter(
+                "Please enter a valid past or current date.",
+                param_hint="'--new-date'"
+            )
+
+        return date
+
+    except ValueError:
+        raise click.BadParameter("Invalid date format. Use YYYY-MM-DD.", param_hint="'--new-date'")
 
 
 def validate_category(category: str):
