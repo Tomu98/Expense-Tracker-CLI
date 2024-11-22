@@ -42,8 +42,8 @@ def validate_description(description: str):
     if len(description) < 3:
         raise click.BadParameter("Description must be at least 3 characters.", param_hint="'--description'")
 
-    if len(description) > 100:
-        raise click.BadParameter("Description must be no more than 100 characters.", param_hint="'--description'")
+    if len(description) > 60:
+        raise click.BadParameter("Description must be no more than 60 characters.", param_hint="'--description'")
 
     return description
 
