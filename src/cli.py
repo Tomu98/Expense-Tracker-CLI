@@ -7,7 +7,7 @@ from commands.summary_command import summary
 
 
 @click.group()
-@click.version_option(version="0.9.0", prog_name="Expense Tracker CLI")
+@click.version_option(version="0.10.0", prog_name="Expense Tracker CLI")
 def cli():
     pass
 
@@ -28,7 +28,6 @@ if __name__ == '__main__':
 # y mostrar una advertencia cuando el usuario supere el presupuesto
 # Falta permitir a los usuarios exportar gastos a un archivo CSV
 
-# Ver si puedo modularizar más el código
 # Agregar tests
 # Agregar estilos con rich
 # Agregar Docstrings
