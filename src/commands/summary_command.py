@@ -74,5 +74,3 @@ def summary(month, year, category):
 
     except FileNotFoundError:
         click.echo("Error: No expenses file was found.")
-    except Exception as e:
-        click.echo(f"An unexpected error occurred: {e}")
