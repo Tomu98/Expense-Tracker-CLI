@@ -1,4 +1,5 @@
 import click
+from utils.budget import check_budget_warning
 from utils.validators import validate_category, validate_description, validate_amount
 from data_manager import initialize_csv, save_expense, get_next_expense_id
 from datetime import datetime
@@ -30,4 +31,12 @@ def add_expense(category, description, amount):
 
     save_expense(expense)
 
+    # Check if the expense exceeds the budget
+    current_year = datetime.now().year
+    current_month = datetime.now().month
+    budget_warning_message = check_budget_warning(current_year, current_month)
+
     click.echo(f"Expense added successfully (ID: {new_id}, Category: '{category}', Amount: ${amount:.2f})")
+    click.echo(budget_warning_message)
+
+# Comprobar que todo esté bien ahora que agregué la función de presupuesto
