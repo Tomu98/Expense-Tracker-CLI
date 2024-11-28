@@ -7,7 +7,7 @@ from datetime import datetime
 
 @click.command()
 @click.option("--category", type=str, prompt="Category", help="Category of the expense.")
-@click.option("--description", default=None, help="Expense description.")
+@click.option("--description", type=str, default=None, help="Expense description.")
 @click.option("--amount", type=float, prompt="Amount", help="Amount of the expense.")
 def add_expense(category, description, amount):
     initialize_csv()
@@ -34,9 +34,11 @@ def add_expense(category, description, amount):
     # Check if the expense exceeds the budget
     current_year = datetime.now().year
     current_month = datetime.now().month
-    budget_warning_message = check_budget_warning(current_year, current_month)
 
     click.echo(f"Expense added successfully (ID: {new_id}, Category: '{category}', Amount: ${amount:.2f})")
-    click.echo(budget_warning_message)
+
+    budget_warning_message = check_budget_warning(current_year, current_month)
+    if budget_warning_message is not None:
+        click.echo(budget_warning_message)
 
 # Comprobar que todo esté bien ahora que agregué la función de presupuesto

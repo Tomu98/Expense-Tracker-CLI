@@ -58,3 +58,12 @@ def validate_amount(amount: float):
         raise click.BadParameter("Amount must be significant (greater than $0.00 after rounding).", param_hint="'--amount'")
 
     return rounded_amount
+
+
+def validate_budget_amount(amount: float):
+    max_budget = 100000
+
+    if amount <= 0 or amount > max_budget:
+        raise click.BadParameter(f"Budget has to be greater than $0 and less than ${max_budget}.", param_hint="'--amount'")
+
+    return round(amount, 2)
