@@ -45,4 +45,4 @@ def check_budget_warning(year: int, month: int) -> str:
                 f"Remaining budget: ${remaining:.2f}."
             )
 
-    return "There is no defined budget for this month."
+    return None

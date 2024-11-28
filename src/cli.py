@@ -6,10 +6,11 @@ from commands.list_command import list_expenses
 from commands.summary_command import summary
 from commands.export_command import export
 from commands.set_budget_command import set_budget
+from commands.delete_budget import delete_budget
 
 
 @click.group()
-@click.version_option(version="0.12.0", prog_name="Expense Tracker CLI")
+@click.version_option(version="0.13.0", prog_name="Expense Tracker CLI")
 def cli():
     pass
 
@@ -22,6 +23,7 @@ cli.add_command(list_expenses, name="list")
 cli.add_command(summary, name="summary")
 cli.add_command(export, name="export")
 cli.add_command(set_budget, name="set-budget")
+cli.add_command(delete_budget, name="delete-budget")
 
 
 if __name__ == '__main__':
@@ -31,3 +33,8 @@ if __name__ == '__main__':
 # Agregar estilos con rich
 # Agregar tests
 # Agregar Docstrings
+
+# Lo que ví:
+# - Comprobar si hace falta "utils/constants.py" o si le agrego más constantes para usar
+# - Comprobar si tengo que ocultar "data/" con .gitignore,
+#   y si lo oculto, que se cree automaticamente para los usuarios

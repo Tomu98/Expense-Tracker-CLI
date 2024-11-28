@@ -1,19 +1,27 @@
 import click
+from datetime import datetime
 from data_manager import initialize_budget_file, update_budget
+from utils.validators import validate_budget_amount
 
 
 @click.command()
+@click.option("--amount", type=float, prompt="Budget amount", help="Amount for the budget.")
 @click.option("--month", type=int, prompt="Month (1-12)", help="Month for the budget (1-12).")
 @click.option("--year", type=int, prompt="Year", help="Year for the budget.")
-@click.option("--amount", type=float, prompt="Budget amount", help="Amount for the budget.")
-def set_budget(month, year, amount):
+def set_budget(amount, month, year):
     initialize_budget_file()
+
+    validate_budget_amount(amount)
 
     if not (1 <= month <= 12):
         raise click.BadParameter("The month must be between 1 and 12.", param_hint="'--month'")
 
-    if amount <= 0:
-        raise click.BadParameter("The budget amount must be greater than 0.", param_hint="'--amount'")
+    current_year = datetime.now().year
+    if not (2000 <= year <= current_year + 5):
+        raise click.BadParameter(
+            f"The year must be between 2000 and {current_year + 5}.",
+            param_hint="'--year'"
+        )
 
     update_budget(month, year, amount)
 
