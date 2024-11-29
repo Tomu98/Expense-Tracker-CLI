@@ -1,6 +1,6 @@
 import click
 import csv
-from data_manager import CSV_FILE_PATH, FIELD_NAMES
+from utils.data_manager import CSV_FILE_PATH, FIELD_NAMES
 
 
 @click.command()

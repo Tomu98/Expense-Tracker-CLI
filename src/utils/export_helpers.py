@@ -29,3 +29,6 @@ def write_excel(output_path, data):
         ws.append([row["ID"], row["Date"], row["Description"], row["Category"], row["Amount"]])
 
     wb.save(output_path)
+
+# Lo que ví:
+# - Incluir información del presupuesto en los archivos exportados

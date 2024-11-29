@@ -2,7 +2,7 @@ import click
 import csv
 from datetime import datetime
 from pathlib import Path
-from data_manager import CSV_FILE_PATH
+from utils.data_manager import CSV_FILE_PATH
 from utils.validators import validate_date, validate_category
 from utils.export_helpers import write_csv, write_json, write_excel
 
@@ -73,3 +73,5 @@ def export(output, month, year, category):
         click.echo("Error: No expenses file was found.")
     except PermissionError:
         click.echo(f"Error: Permission denied to write to '{output}'.")
+
+# Ver si puedo y tengo que exportar también con información del presupuesto

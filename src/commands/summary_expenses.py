@@ -2,7 +2,7 @@ import click
 import csv
 from datetime import datetime
 from collections import defaultdict
-from data_manager import CSV_FILE_PATH
+from utils.data_manager import CSV_FILE_PATH
 from utils.validators import validate_date, validate_category
 
 
@@ -74,3 +74,5 @@ def summary(month, year, category):
 
     except FileNotFoundError:
         click.echo("Error: No expenses file was found.")
+
+# Añadir información del presupuesto
