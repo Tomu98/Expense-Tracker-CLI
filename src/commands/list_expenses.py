@@ -2,7 +2,7 @@ import click
 import csv
 from rich.console import Console
 from rich.table import Table
-from data_manager import CSV_FILE_PATH
+from utils.data_manager import CSV_FILE_PATH
 from utils.validators import validate_category, validate_amount, validate_date
 
 
@@ -78,3 +78,5 @@ def list_expenses(category, start_date, end_date, min_amount, max_amount):
 
     console = Console()
     console.print(table)
+
+# Ver si tengo que añadir información del presupuesto

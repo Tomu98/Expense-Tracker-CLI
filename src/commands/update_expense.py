@@ -1,7 +1,7 @@
 import click
 import csv
 from utils.validators import validate_date, validate_category, validate_description, validate_amount
-from data_manager import CSV_FILE_PATH, FIELD_NAMES
+from utils.data_manager import CSV_FILE_PATH, FIELD_NAMES
 
 
 @click.command()
@@ -52,3 +52,5 @@ def update_expense(id, new_date, new_category, new_description, new_amount):
         click.echo(f"Validation error: {e}")
     except Exception as e:
         click.echo(f"Error updating expense: {e}")
+
+# Ver si tengo que añadir información del presupuesto

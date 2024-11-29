@@ -1,7 +1,7 @@
 import click
 from utils.budget import check_budget_warning
 from utils.validators import validate_category, validate_description, validate_amount
-from data_manager import initialize_csv, save_expense, get_next_expense_id
+from utils.data_manager import initialize_csv, save_expense, get_next_expense_id
 from datetime import datetime
 
 
