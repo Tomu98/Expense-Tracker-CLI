@@ -75,4 +75,9 @@ def summary(month, year, category):
     except FileNotFoundError:
         click.echo("Error: No expenses file was found.")
 
-# Añadir información del presupuesto
+# Añadir información del presupuesto:
+# - Que salga la cantidad del presupuesto y lo que queda del mes actual o seleccionado con --month --year
+# - Si se coloca tanto --month, --year y --category, que salga la información del presupuesto de la fecha seleccionado pero no importa la categoria
+
+
+# ARREGLAR ESTO YA AAAAAAAAAAAAAAAAA
