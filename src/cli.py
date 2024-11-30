@@ -9,7 +9,7 @@ from commands.budget import set_budget, delete_budget
 
 
 @click.group()
-@click.version_option(version="0.13.1", prog_name="Expense Tracker CLI")
+@click.version_option(version="0.13.2", prog_name="Expense Tracker CLI")
 def cli():
     pass
 
@@ -32,6 +32,3 @@ if __name__ == '__main__':
 # Agregar estilos con rich
 # Agregar tests
 # Agregar Docstrings
-
-# Lo que ví:
-# - Comprobar si hace falta "utils/constants.py" o si le agrego más constantes para usar

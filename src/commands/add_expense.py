@@ -1,8 +1,8 @@
 import click
-from utils.budget import check_budget_warning
-from utils.validators import validate_category, validate_description, validate_amount
-from utils.data_manager import initialize_csv, save_expense, get_next_expense_id
 from datetime import datetime
+from utils.budget import check_budget_warning
+from utils.data_manager import initialize_csv, save_expense, get_next_expense_id
+from utils.validators import validate_category, validate_description, validate_amount
 
 
 @click.command()
@@ -40,5 +40,3 @@ def add_expense(category, description, amount):
     budget_warning_message = check_budget_warning(current_year, current_month)
     if budget_warning_message is not None:
         click.echo(budget_warning_message)
-
-# Comprobar que todo esté bien ahora que agregué la función de presupuesto
