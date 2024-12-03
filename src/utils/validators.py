@@ -10,7 +10,7 @@ def validate_date(date: str):
         if parsed_date.date() > today:
             raise click.BadParameter(
                 "Please enter a valid past or current date.",
-                param_hint="'--new-date'"
+                param_hint="'--date'"
             )
 
         return date
@@ -18,7 +18,7 @@ def validate_date(date: str):
     except ValueError:
         raise click.BadParameter(
             f"Invalid date format or values in '{date}'. Use YYYY-MM-DD and ensure the values are valid.",
-            param_hint="'--new-date'"
+            param_hint="'--date'"
         )
 
 
