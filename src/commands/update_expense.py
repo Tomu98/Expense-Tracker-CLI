@@ -6,17 +6,17 @@ from utils.validators import validate_date, validate_category, validate_descript
 
 @click.command()
 @click.option("--id", type=int, prompt="ID", help="ID of the expense to be updated.")
-@click.option("--new-date", type=str, help="New date (YYYYY-MM-DD).")
-@click.option("--new-category", type=str, help="New category.")
-@click.option("--new-description", type=str, help="New description.")
-@click.option("--new-amount", type=float, help="New amount.")
+@click.option("--date", type=str, help="New date (YYYYY-MM-DD).")
+@click.option("--category", type=str, help="New category.")
+@click.option("--description", type=str, help="New description.")
+@click.option("--amount", type=float, help="New amount.")
 def update_expense(id, new_date, new_category, new_description, new_amount):
     try:
         if id <= 0:
             raise click.BadParameter("ID must be a positive number greater than 0.", param_hint="--id")
 
         if not (new_date or new_category or new_description or new_amount):
-            raise click.UsageError("You must provide at least one field to update (e.g., --new-date.)")
+            raise click.UsageError("You must provide at least one field to update (e.g., --date.)")
 
         # Validate that the file exists
         try:
