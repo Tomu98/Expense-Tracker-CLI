@@ -78,5 +78,3 @@ def list_expenses(category, start_date, end_date, min_amount, max_amount):
 
     console = Console()
     console.print(table)
-
-# Ver si tengo que añadir información del presupuesto

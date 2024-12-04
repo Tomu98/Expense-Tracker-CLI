@@ -89,8 +89,8 @@ def check_budget_warning(year: int, month: int) -> str:
         else:
             remaining = budget_amount - current_expenses
             return (
-                f"Monthly budget: ${budget_amount:.2f}. "
-                f"Current expenses: ${current_expenses:.2f}. "
+                f"Monthly budget: ${budget_amount:.2f}.\n"
+                f"Current expenses: ${current_expenses:.2f}.\n"
                 f"Remaining budget: ${remaining:.2f}."
             )
 
