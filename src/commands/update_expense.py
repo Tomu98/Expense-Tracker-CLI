@@ -1,5 +1,6 @@
 import click
 import csv
+from utils.budget import check_budget_warning
 from utils.data_manager import CSV_FILE_PATH, FIELD_NAMES
 from utils.validators import validate_date, validate_category, validate_description, validate_amount
 
@@ -10,12 +11,12 @@ from utils.validators import validate_date, validate_category, validate_descript
 @click.option("--category", type=str, help="New category.")
 @click.option("--description", type=str, help="New description.")
 @click.option("--amount", type=float, help="New amount.")
-def update_expense(id, new_date, new_category, new_description, new_amount):
+def update_expense(id, date, category, description, amount):
     try:
         if id <= 0:
             raise click.BadParameter("ID must be a positive number greater than 0.", param_hint="--id")
 
-        if not (new_date or new_category or new_description or new_amount):
+        if not (date or category or description or amount):
             raise click.UsageError("You must provide at least one field to update (e.g., --date.)")
 
         # Validate that the file exists
@@ -29,21 +30,26 @@ def update_expense(id, new_date, new_category, new_description, new_amount):
 
         # Find the ID and update if it exists
         expense_found = False
+        updated_date = None
         for expense in expenses:
             if expense["ID"] == str(id):
                 expense_found = True
 
-                if new_date:
-                    expense["Date"] = validate_date(new_date)
+                if date:
+                    validated_date = validate_date(date)
+                    expense["Date"] = validated_date
+                    updated_date = validated_date
+                else:
+                    updated_date = expense["Date"]
 
-                if new_category:
-                    expense["Category"] = validate_category(new_category)
+                if category:
+                    expense["Category"] = validate_category(category)
 
-                if new_description:
-                    expense["Description"] = validate_description(new_description)
+                if description:
+                    expense["Description"] = validate_description(description)
 
-                if new_amount is not None:
-                    expense["Amount"] = f"{validate_amount(new_amount):.2f}"
+                if amount is not None:
+                    expense["Amount"] = f"{validate_amount(amount):.2f}"
 
                 break
 
@@ -58,6 +64,14 @@ def update_expense(id, new_date, new_category, new_description, new_amount):
             writer.writerows(expenses)
 
         click.echo(f"Expense with ID '{id}' successfully updated.")
+
+        # Check if the updated expense affects the monthly budget
+        expense_year, expense_month = map(int, updated_date.split("-")[:2])
+
+        # Budget message
+        budget_warning_message = check_budget_warning(expense_year, expense_month)
+        if budget_warning_message is not None:
+            click.echo(budget_warning_message)
 
     except click.BadParameter as e:
         click.echo(f"Validation error: {e}")
