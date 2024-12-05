@@ -2,9 +2,10 @@ import click
 import csv
 from datetime import datetime
 from pathlib import Path
+from utils.budget import get_budget_summary
 from utils.data_manager import CSV_FILE_PATH
-from utils.validators import validate_date, validate_category
 from utils.export_helpers import write_csv, write_json, write_excel
+from utils.validators import validate_date, validate_category
 
 
 @click.command()
@@ -12,7 +13,8 @@ from utils.export_helpers import write_csv, write_json, write_excel
 @click.option("--month", type=int, help="Filter expenses by month (1-12).")
 @click.option("--year", type=int, help="Filter expenses by year (e.g., 2024).")
 @click.option("--category", help="Filter expenses by category.")
-def export(output, month, year, category):
+@click.option("--include-budget", is_flag=True, help="Include budget information in the export.")
+def export(output, month, year, category, include_budget):
     try:
         current_date = datetime.now()
         target_year = year if year else current_date.year
@@ -30,7 +32,7 @@ def export(output, month, year, category):
             validate_date(f"{target_year}-01-01")
         if month:
             if not (1 <= month <= 12):
-                raise click.BadParameter("Month must be between 1 and 12.", param_hint="'--month'")
+                raise click.BadParameter(f"Invalid month '{month}'. Please specify a value between 1 and 12.", param_hint="'--month'")
             validate_date(f"{target_year}-{month:02d}-01")
 
         # Ensure the directory for the output file exists
@@ -59,13 +61,18 @@ def export(output, month, year, category):
             click.echo("No expenses match the specified filters.")
             return
 
+        # Calculate budget information if necessary
+        budget_info = None
+        if include_budget and month:
+            budget_info = get_budget_summary(year=target_year, month=month)
+
         # Write the filtered expenses to the output file
         if output_format == ".csv":
-            write_csv(output_path, filtered_expenses)
+            write_csv(output_path, filtered_expenses, budget_info=budget_info)
         elif output_format == ".json":
-            write_json(output_path, filtered_expenses)
+            write_json(output_path, filtered_expenses, budget_info=budget_info)
         elif output_format == ".xlsx":
-            write_excel(output_path, filtered_expenses)
+            write_excel(output_path, filtered_expenses, budget_info=budget_info)
 
         click.echo(f"Expenses successfully exported to '{output}'.")
 
@@ -73,5 +80,3 @@ def export(output, month, year, category):
         click.echo("Error: No expenses file was found.")
     except PermissionError:
         click.echo(f"Error: Permission denied to write to '{output}'.")
-
-# Ver si puedo y tengo que exportar también con información del presupuesto

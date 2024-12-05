@@ -95,3 +95,17 @@ def check_budget_warning(year: int, month: int) -> str:
             )
 
     return None
+
+
+def get_budget_summary(year: int, month: int) -> dict:
+    budgets = read_budget()
+    key = f"{year}-{month:02d}"
+    summary = {"budget_set": False, "budget_amount": 0.0, "current_expenses": 0.0, "remaining_budget": 0.0}
+
+    if key in budgets:
+        summary["budget_set"] = True
+        summary["budget_amount"] = budgets[key]
+        summary["current_expenses"] = calculate_monthly_expenses(year, month)
+        summary["remaining_budget"] = budgets[key] - summary["current_expenses"]
+
+    return summary
