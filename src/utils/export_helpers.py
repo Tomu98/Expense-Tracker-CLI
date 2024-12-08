@@ -29,7 +29,6 @@ def write_csv(output_path, data, budget_info=None):
             })
 
 
-
 def write_json(output_path, data, budget_info=None):
     output = {"expenses": data}
     if budget_info:
@@ -40,7 +39,6 @@ def write_json(output_path, data, budget_info=None):
         }
     with open(output_path, "w", encoding="utf-8") as file:
         json.dump(output, file, indent=4, ensure_ascii=False)
-
 
 
 def write_excel(output_path, data, budget_info=None):

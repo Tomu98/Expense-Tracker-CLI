@@ -9,12 +9,16 @@ from utils.validators import validate_date, validate_category
 
 
 @click.command()
-@click.option("--output", required=True, help="Path to save the exported file (CSV/JSON/Excel).")
+@click.option("--output", type=str, required=True, help="Path to save the exported file (CSV/JSON/Excel).")
 @click.option("--month", type=int, help="Filter expenses by month (1-12).")
 @click.option("--year", type=int, help="Filter expenses by year (e.g., 2024).")
-@click.option("--category", help="Filter expenses by category.")
+@click.option("--category", type=str, help="Filter expenses by category.")
 @click.option("--include-budget", is_flag=True, help="Include budget information in the export.")
 def export(output, month, year, category, include_budget):
+    """
+    Export expenses to a specified file (CSV, JSON, or Excel), with optional filters by date or category.
+    Supports including budget information for the selected month.
+    """
     try:
         current_date = datetime.now()
         target_year = year if year else current_date.year

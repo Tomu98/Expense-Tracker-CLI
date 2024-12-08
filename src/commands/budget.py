@@ -1,7 +1,7 @@
 import click
+from datetime import datetime
 from rich.table import Table
 from rich.console import Console
-from datetime import datetime
 from utils.budget import initialize_budget_file, read_budget, save_budget, update_budget, calculate_monthly_expenses
 from utils.validators import validate_budget_amount
 
@@ -12,6 +12,10 @@ from utils.validators import validate_budget_amount
 @click.option("--month", type=int, prompt="Month (1-12)", help="Month for the budget (1-12).")
 @click.option("--year", type=int, prompt="Year", help="Year for the budget.")
 def set_budget(amount, month, year):
+    """
+    Sets a monthly budget for a specific year and month. Validates the amount,
+    month, and year, and updates the budget file with the new value.
+    """
     initialize_budget_file()
 
     validate_budget_amount(amount)
@@ -34,6 +38,10 @@ def set_budget(amount, month, year):
 @click.option("--month", type=int, prompt="Month (1-12)", help="Month for the budget to delete (1-12).")
 @click.option("--year", type=int, prompt="Year", help="Year for the budget to delete.")
 def delete_budget(month, year):
+    """
+    Deletes the budget for a specific year and month. Validates the month and year
+    and removes the corresponding budget entry if it exists.
+    """
     initialize_budget_file()
 
     if not (1 <= month <= 12):
@@ -64,6 +72,11 @@ def delete_budget(month, year):
 @click.option("--all", is_flag=True, help="Show all budgets.")
 @click.option("--specific", type=str, help="Show the budget for a specific month in 'YYYY-MM' format.")
 def budget(current, all, specific):
+    """
+    Displays budget information. Allows viewing the current month's budget, all budgets,
+    or a specific budget by month and year. Shows budget total, current expenses,
+    and the remaining difference.
+    """
     console = Console()
     budgets = read_budget()
 
@@ -75,8 +88,8 @@ def budget(current, all, specific):
         console.print("[bold yellow]Please specify an option: --current, --all, or --specific 'YYYY-MM'.[/bold yellow]")
         return
 
+    # Validate format "YYYY-MM"
     if specific:
-        # Validate format "YYYY-MM"
         try:
             specific_date = datetime.strptime(specific, "%Y-%m")
             year, month = specific_date.year, specific_date.month
@@ -111,8 +124,8 @@ def budget(current, all, specific):
         console.print(table)
         return
 
+    # Show current budget
     if current:
-        # Show current budget
         current_year = datetime.now().year
         current_month = datetime.now().month
         key = f"{current_year}-{current_month:02d}"
@@ -141,8 +154,8 @@ def budget(current, all, specific):
 
         console.print(table)
 
+    # Show all budgets
     if all:
-        # Show all budgets
         table = Table(title="All Budgets")
         table.add_column("Month", justify="center")
         table.add_column("Budget Total", justify="center")
@@ -163,7 +176,3 @@ def budget(current, all, specific):
             )
 
         console.print(table)
-
-
-# Asegurarse que todos los demás comandos funcionen bien con esta función
-# y que si hace falta, agregar referencias del presupuesto y su monto, como en list, summary, update

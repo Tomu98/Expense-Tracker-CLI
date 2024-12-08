@@ -10,6 +10,10 @@ from utils.validators import validate_category, validate_description, validate_a
 @click.option("--description", type=str, default=None, help="Expense description.")
 @click.option("--amount", type=float, prompt="Amount", help="Amount of the expense.")
 def add_expense(category, description, amount):
+    """
+    Adds a new expense, including category, description, and amount. 
+    Validates inputs, saves the expense, and checks for budget warnings.
+    """
     initialize_csv()
 
     # Validations

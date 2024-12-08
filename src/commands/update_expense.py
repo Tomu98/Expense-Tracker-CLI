@@ -12,6 +12,10 @@ from utils.validators import validate_date, validate_category, validate_descript
 @click.option("--description", type=str, help="New description.")
 @click.option("--amount", type=float, help="New amount.")
 def update_expense(id, date, category, description, amount):
+    """
+    Allows the user to update an existing expense by ID.
+    It validates inputs and checks if the updated expense exceeds the monthly budget limit.
+    """
     try:
         if id <= 0:
             raise click.BadParameter("ID must be a positive number greater than 0.", param_hint="--id")
