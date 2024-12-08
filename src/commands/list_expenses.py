@@ -7,12 +7,16 @@ from utils.validators import validate_category, validate_amount, validate_date
 
 
 @click.command()
-@click.option("--category", help="Filter expenses by category.")
+@click.option("--category", type=str, help="Filter expenses by category.")
 @click.option("--start-date", help="Filter expenses from a specific start date (YYYY-MM-DD).")
 @click.option("--end-date", help="Filter expenses up to a specific end date (YYYY-MM-DD).")
 @click.option("--min-amount", type=float, help="Filter expenses with a minimum amount.")
 @click.option("--max-amount", type=float, help="Filter expenses with a maximum amount.")
 def list_expenses(category, start_date, end_date, min_amount, max_amount):
+    """
+    Lists and filters. Users can filter by category, date range,
+    and amount range, displaying results in a formatted table.
+    """
     try:
         with open(CSV_FILE_PATH, "r", newline="") as file:
             reader = csv.DictReader(file)

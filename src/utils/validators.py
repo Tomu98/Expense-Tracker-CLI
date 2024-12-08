@@ -24,7 +24,7 @@ def validate_date(date: str):
 
 def validate_category(category: str):
     category = category.capitalize()
-    
+
     VALID_CATEGORIES = ["Groceries", "Leisure", "Electronics", "Utilities", "Clothing", "Health", "Others"]
 
     if category not in VALID_CATEGORIES:

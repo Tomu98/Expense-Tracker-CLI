@@ -9,8 +9,12 @@ from utils.validators import validate_date, validate_category
 @click.command()
 @click.option("--month", type=int, help="Month number to show the summary (1-12).")
 @click.option("--year", type=int, help="Year to show the summary (e.g., 2024).")
-@click.option("--category", help="Filter expenses by a specific category.")
+@click.option("--category", type=str, help="Filter expenses by a specific category.")
 def summary(month, year, category):
+    """
+    Displays a summary of expenses, optionally filtered by year, month or category.
+    It also includes budget information, if applicable, and provides a breakdown of expenses by category.
+    """
     try:
         current_date = datetime.now()
         current_year = current_date.year

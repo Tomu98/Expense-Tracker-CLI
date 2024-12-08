@@ -4,9 +4,12 @@ from utils.data_manager import CSV_FILE_PATH, FIELD_NAMES
 
 
 @click.command()
-@click.option("--id", help="ID of the expense to delete.", required=False)
+@click.option("--id", type=int, required=True, help="ID of the expense to delete.")
 @click.option("--all", is_flag=True, help="Delete all expenses.")
 def delete_expense(id, all):
+    """
+    Delete a specific expense by ID or clear all expenses after user confirmation.
+    """
     try:
         with open(CSV_FILE_PATH, "r", newline="") as file:
             reader = csv.DictReader(file)
