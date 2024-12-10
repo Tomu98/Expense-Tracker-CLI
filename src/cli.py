@@ -9,7 +9,7 @@ from commands.budget import set_budget, delete_budget, budget
 
 
 @click.group()
-@click.version_option(version="0.15.1", prog_name="Expense Tracker CLI")
+@click.version_option(version="0.15.2", prog_name="Expense Tracker CLI")
 def cli():
     pass
 
@@ -32,4 +32,3 @@ if __name__ == '__main__':
 
 # Agregar estilos con rich
 # Agregar tests
-# Agregar Docstrings

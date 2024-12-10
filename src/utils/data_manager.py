@@ -12,6 +12,10 @@ FIELD_NAMES = ["ID", "Date", "Description", "Category", "Amount"]
 
 
 def initialize_csv():
+    """
+    Initializes the expenses CSV file.
+    Creates the file and writes the header if it doesn't exist.
+    """
     try:
         CSV_FILE_PATH.parent.mkdir(exist_ok=True)
         with CSV_FILE_PATH.open("x", newline="") as file:
@@ -22,12 +26,25 @@ def initialize_csv():
 
 
 def save_expense(expense: Dict[str, str]):
+    """
+    Saves a single expense entry to the CSV file.
+
+    Args:
+        expense (Dict[str, str]): A dictionary representing the expense with keys corresponding to FIELD_NAMES.
+    """
     with CSV_FILE_PATH.open("a", newline="") as file:
         writer = csv.DictWriter(file, fieldnames=FIELD_NAMES)
         writer.writerow(expense)
 
 
 def get_next_expense_id() -> int:
+    """
+    Retrieves the next available ID for a new expense entry.
+
+    Returns:
+        int: The next available ID, incremented from the highest ID found in the file. 
+             If the file is empty or doesn't exist, returns 1.
+    """
     try:
         with CSV_FILE_PATH.open("r", newline="") as file:
             reader = csv.DictReader(file)
@@ -38,6 +55,18 @@ def get_next_expense_id() -> int:
 
 
 def filter_expenses(reader, target_year, target_month=None, target_category=None):
+    """
+    Filters expenses by year, month, and category.
+
+    Args:
+        reader: CSV reader object with expense data.
+        target_year (int): Year to filter by.
+        target_month (int, optional): Month (1-12). Defaults to all months.
+        target_category (str, optional): Category. Defaults to all categories.
+
+    Returns:
+        tuple: (total_expense, filtered_expense, category_summary)
+    """
     total_expense = 0.00
     filtered_expense = 0.00
     category_summary = defaultdict(float)
