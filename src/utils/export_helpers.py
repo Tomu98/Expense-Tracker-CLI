@@ -4,6 +4,15 @@ from openpyxl import Workbook
 
 
 def write_csv(output_path, data, budget_info=None):
+    """
+    Exports expense data and optional budget summary to a CSV file.
+
+    Args:
+        output_path (str): Path to save the CSV file.
+        data (list of dict): List of expenses, each represented as a dictionary.
+        budget_info (dict, optional): Budget summary including budget amount, current expenses,
+                                      and remaining budget. Defaults to None.
+    """
     with open(output_path, "w", newline="", encoding="utf-8") as file:
         writer = csv.DictWriter(file, fieldnames=["ID", "Date", "Description", "Category", "Amount"])
         writer.writeheader()
@@ -30,6 +39,15 @@ def write_csv(output_path, data, budget_info=None):
 
 
 def write_json(output_path, data, budget_info=None):
+    """
+    Exports expense data and optional budget summary to a JSON file.
+
+    Args:
+        output_path (str): Path to save the JSON file.
+        data (list of dict): List of expenses, each represented as a dictionary.
+        budget_info (dict, optional): Budget summary including budget amount, current expenses,
+                                      and remaining budget. Defaults to None.
+    """
     output = {"expenses": data}
     if budget_info:
         output["budget_summary"] = {
@@ -42,6 +60,15 @@ def write_json(output_path, data, budget_info=None):
 
 
 def write_excel(output_path, data, budget_info=None):
+    """
+    Exports expense data and optional budget summary to an Excel file.
+
+    Args:
+        output_path (str): Path to save the Excel file.
+        data (list of dict): List of expenses, each represented as a dictionary.
+        budget_info (dict, optional): Budget summary including budget amount, current expenses,
+                                      and remaining budget. Defaults to None.
+    """
     wb = Workbook()
     ws = wb.active
     ws.title = "Expenses"

@@ -3,6 +3,9 @@ from datetime import datetime
 
 
 def validate_date(date: str):
+    """
+    Validates the date format (YYYY-MM-DD) and ensures it's not in the future.
+    """
     try:
         parsed_date = datetime.strptime(date, "%Y-%m-%d")
         today = datetime.now().date()
@@ -23,6 +26,9 @@ def validate_date(date: str):
 
 
 def validate_category(category: str):
+    """
+    Ensures the category is in the list of valid options.
+    """
     category = category.capitalize()
 
     VALID_CATEGORIES = ["Groceries", "Leisure", "Electronics", "Utilities", "Clothing", "Health", "Others"]
@@ -38,6 +44,9 @@ def validate_category(category: str):
 
 
 def validate_description(description: str):
+    """
+    Validates the description length (3 to 60 characters). Defaults to "..." if empty.
+    """
     if not description:
         return "..."
 
@@ -51,6 +60,9 @@ def validate_description(description: str):
 
 
 def validate_amount(amount: float):
+    """
+    Ensures the amount is positive, below $100,000, and significant after rounding.
+    """
     max_value = 100000
     if amount <= 0 or amount > max_value:
         raise click.BadParameter(f"Amount must be positive and not exceed ${max_value}.", param_hint="'--amount'")
@@ -63,6 +75,9 @@ def validate_amount(amount: float):
 
 
 def validate_budget_amount(amount: float):
+    """
+    Validates the budget amount to be greater than $0 and less than or equal to $100,000.
+    """
     max_budget = 100000
 
     if amount <= 0 or amount > max_budget:
