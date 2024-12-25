@@ -3,6 +3,7 @@ import json
 import click
 from pathlib import Path
 from datetime import datetime
+from styles.colors import console
 from utils.data_manager import CSV_FILE_PATH
 
 
@@ -130,15 +131,16 @@ def check_budget_warning(year: int, month: int) -> str:
 
         if current_expenses > budget_amount:
             return (
-                f"Warning: You have exceeded your monthly budget for ${budget_amount:.2f} "
-                f"with a total expense of ${current_expenses:.2f}."
+                f"[warning]Warning:[/warning] [white]You have exceeded your monthly budget for "
+                f"[amount]${budget_amount:.2f}[/amount] with a total expense of [amount2]${current_expenses:.2f}[/amount2][/white].\n"
             )
         else:
             remaining = budget_amount - current_expenses
             return (
-                f"Monthly budget: ${budget_amount:.2f}.\n"
-                f"Current expenses: ${current_expenses:.2f}.\n"
-                f"Remaining budget: ${remaining:.2f}."
+                f"[success]Budget information:[/success]\n"
+                f"[white_italic]- Monthly budget: ${budget_amount:.2f}\n"
+                f"- Current expenses: [amount]${current_expenses:.2f}[/amount]\n"
+                f"- Remaining budget: ${remaining:.2f}[/white_italic]\n"
             )
 
     return None

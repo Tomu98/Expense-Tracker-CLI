@@ -1,5 +1,6 @@
 import click
 from datetime import datetime
+from styles.colors import console
 from utils.budget import check_budget_warning
 from utils.data_manager import initialize_csv, save_expense, get_next_expense_id
 from utils.validators import validate_category, validate_description, validate_amount
@@ -39,8 +40,14 @@ def add_expense(category, description, amount):
     current_year = datetime.now().year
     current_month = datetime.now().month
 
-    click.echo(f"Expense added successfully (ID: {new_id}, Category: '{category}', Amount: ${amount:.2f})")
+    console.print(
+    "\n[success]Expense added successfully:[/success]\n"
+    f"[white]- ID: [id]{new_id}[/id]\n"
+    f"- Category: [category]'{category}'[/category]\n"
+    f"- Amount: [amount]${amount:.2f}[/amount]\n"
+    f"- Date: [date]{expense_date}[/date][/white]\n"
+    )
 
     budget_warning_message = check_budget_warning(current_year, current_month)
     if budget_warning_message is not None:
-        click.echo(budget_warning_message)
+        console.print(budget_warning_message)
