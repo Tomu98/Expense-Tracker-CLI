@@ -13,6 +13,8 @@ custom_theme = Theme({
     "category": "#cc73ff italic",
     "amount": "#76ab2c italic",
     "amount2": "#ce4040 italic",
+    "budget": "#008d5c italic",
+    "budget2": "#ccff00 italic",
 })
 
 console = Console(theme=custom_theme)
