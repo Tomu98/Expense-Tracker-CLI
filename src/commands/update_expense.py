@@ -1,5 +1,6 @@
 import click
 import csv
+from styles.colors import console
 from utils.budget import check_budget_warning
 from utils.data_manager import CSV_FILE_PATH, FIELD_NAMES
 from utils.validators import validate_date, validate_category, validate_description, validate_amount
@@ -29,7 +30,7 @@ def update_expense(id, date, category, description, amount):
                 reader = csv.DictReader(file)
                 expenses = list(reader)
         except FileNotFoundError:
-            click.echo("Error: Expense file not found.")
+            console.print("[danger]Error:[/danger] Expense file not found.")
             return
 
         # Find the ID and update if it exists
@@ -58,7 +59,7 @@ def update_expense(id, date, category, description, amount):
                 break
 
         if not expense_found:
-            click.echo(f"Error: No expense found with ID '{id}'.")
+            console.print(f"[danger]Error:[/danger] No expense found with ID [id]{id}[/id].")
             return
 
         # Overwrite file with updated data
@@ -67,7 +68,12 @@ def update_expense(id, date, category, description, amount):
             writer.writeheader()
             writer.writerows(expenses)
 
-        click.echo(f"Expense with ID '{id}' successfully updated.")
+        console.print(
+            f"\n[success]Expense with ID [id]{id}[/id] updated successfully:[/success]\n"
+            f"- [white]Category: [category]'{category}'[/category]\n"
+            f"- Amount: [amount]${amount:.2f}[/amount]\n"
+            f"- Date: [date]{date}[/date][/white]\n"
+        )
 
         # Check if the updated expense affects the monthly budget
         expense_year, expense_month = map(int, updated_date.split("-")[:2])
@@ -75,11 +81,11 @@ def update_expense(id, date, category, description, amount):
         # Budget message
         budget_warning_message = check_budget_warning(expense_year, expense_month)
         if budget_warning_message is not None:
-            click.echo(budget_warning_message)
+            console.print(budget_warning_message)
 
     except click.BadParameter as e:
-        click.echo(f"Validation error: {e}")
+        console.print(f"[danger]Validation error:[/danger] {e}")
     except click.UsageError as e:
-        click.echo(f"Usage error: {e}")
+        console.print(f"[danger]Usage error:[/danger] {e}")
     except Exception as e:
-        click.echo(f"Error updating expense: {e}")
+        console.print(f"[danger]Error updating expense:[/danger] {e}")
