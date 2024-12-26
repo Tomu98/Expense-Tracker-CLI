@@ -1,10 +1,11 @@
 import click
 import csv
+from styles.colors import console
 from utils.data_manager import CSV_FILE_PATH, FIELD_NAMES
 
 
 @click.command()
-@click.option("--id", type=int, required=True, help="ID of the expense to delete.")
+@click.option("--id", type=int, required=False, help="ID of the expense to delete.")
 @click.option("--all", is_flag=True, help="Delete all expenses.")
 def delete_expense(id, all):
     """
@@ -16,7 +17,7 @@ def delete_expense(id, all):
             expenses = list(reader)
 
         if not expenses:
-            click.echo("No expenses found. Nothing to delete.")
+            console.print("[warning]No expenses found. Nothing to delete.[/warning]")
             return
 
         if all:
@@ -32,23 +33,23 @@ def delete_expense(id, all):
                         with open(CSV_FILE_PATH, "w", newline="") as file:
                             writer = csv.DictWriter(file, fieldnames=FIELD_NAMES)
                             writer.writeheader()
-                        click.echo("All expenses have been deleted successfully.")
+                        console.print("[success]All expenses have been deleted successfully.[/success]")
                     except Exception as e:
-                        click.echo(f"Error when deleting all expenses: {e}")
+                        console.print(f"[danger]Error when deleting all expenses:[/danger] {e}")
                     return
                 elif confirmation in ["n", "no"]:
-                    click.echo("Deletion cancelled.")
+                    console.print("[warning]Deletion cancelled.[/warning]")
                     return
                 else:
-                    click.echo("Please enter a valid response: 'y' or 'n' (or 'yes'/'no').")
+                    console.print("[warning]Please enter a valid response:[/warning] 'y' or 'n' (or 'yes'/'no').")
 
         if not id or int(id) <= 0:
             raise click.BadParameter("You must provide a valid positive ID.", param_hint="'--id'")
 
-        updated_expenses = [expense for expense in expenses if expense["ID"] != id]
+        updated_expenses = [expense for expense in expenses if int(expense["ID"]) != id]
 
         if len(updated_expenses) == len(expenses):
-            click.echo(f"No expense found with ID {id}.")
+            console.print(f"[danger]No expense found with ID [id]{id}[/id].[/danger]")
             return
 
         with open(CSV_FILE_PATH, "w", newline="") as file:
@@ -56,9 +57,9 @@ def delete_expense(id, all):
             writer.writeheader()
             writer.writerows(updated_expenses)
 
-        click.echo(f"Expense with ID {id} has been deleted successfully.")
+        console.print(f"[success]Expense with ID [id]{id}[/id] has been deleted successfully.[/success]")
 
     except FileNotFoundError:
-        click.echo("Error: Expense file not found.")
+        console.print("[danger]Error:[/danger] Expense file not found.")
     except Exception as e:
-        click.echo(f"Error when eliminating expense: {e}")
+        console.print(f"[danger]Error when eliminating expense:[/danger] {e}")
