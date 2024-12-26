@@ -2,32 +2,42 @@ import click
 import csv
 from datetime import datetime
 from pathlib import Path
+from styles.colors import console
 from utils.budget import get_budget_summary
 from utils.data_manager import CSV_FILE_PATH
-from utils.export_helpers import write_csv, write_json, write_excel
+from utils.export_helpers import write_csv, write_json, write_excel, generate_unique_filename
 from utils.validators import validate_date, validate_category
 
 
 @click.command()
-@click.option("--output", type=str, required=True, help="Path to save the exported file (CSV/JSON/Excel).")
+@click.option("--output", type=str, required=True, help="Name of the exported file (e.g., expenses.csv, expenses.json).")
 @click.option("--month", type=int, help="Filter expenses by month (1-12).")
 @click.option("--year", type=int, help="Filter expenses by year (e.g., 2024).")
 @click.option("--category", type=str, help="Filter expenses by category.")
 @click.option("--include-budget", is_flag=True, help="Include budget information in the export.")
 def export(output, month, year, category, include_budget):
     """
-    Export expenses to a specified file (CSV, JSON, or Excel), with optional filters by date or category.
+    Export expenses to a file (CSV, JSON, or Excel) in the 'exports' directory, with optional filters by date or category.
     Supports including budget information for the selected month.
     """
     try:
         current_date = datetime.now()
         target_year = year if year else current_date.year
-        output_path = Path(output)
+
+        # Ensure the exports directory exists
+        exports_dir = Path("exports")
+        exports_dir.mkdir(parents=True, exist_ok=True)
+
+        # Create full output path in the exports directory
+        output_path = exports_dir / output
         output_format = output_path.suffix.lower()
 
         # Validate output format
         if output_format not in [".csv", ".json", ".xlsx"]:
             raise click.BadParameter("Supported formats are CSV, JSON, and Excel (.xlsx).", param_hint="'--output'")
+
+        # Handle duplicate file names by appending a unique suffix
+        output_path = generate_unique_filename(output_path)
 
         # Validate inputs
         if category:
@@ -38,10 +48,6 @@ def export(output, month, year, category, include_budget):
             if not (1 <= month <= 12):
                 raise click.BadParameter(f"Invalid month '{month}'. Please specify a value between 1 and 12.", param_hint="'--month'")
             validate_date(f"{target_year}-{month:02d}-01")
-
-        # Ensure the directory for the output file exists
-        if not output_path.parent.exists():
-            output_path.parent.mkdir(parents=True, exist_ok=True)
 
         # Read the source CSV file
         with open(CSV_FILE_PATH, "r", newline="", encoding="utf-8") as file:
@@ -58,11 +64,11 @@ def export(output, month, year, category, include_budget):
                         filtered_expenses.append(row)
 
                 except ValueError as e:
-                    click.echo(f"Skipping row due to error: {e}")
+                    console.print(f"[danger]Skipping row due to error:[/danger] {e}")
 
         # Check if there are any expenses
         if not filtered_expenses:
-            click.echo("No expenses match the specified filters.")
+            console.print("[warning]No expenses match the specified filters.[/warning]")
             return
 
         # Calculate budget information if necessary
@@ -78,9 +84,9 @@ def export(output, month, year, category, include_budget):
         elif output_format == ".xlsx":
             write_excel(output_path, filtered_expenses, budget_info=budget_info)
 
-        click.echo(f"Expenses successfully exported to '{output}'.")
+        console.print(f"[success]Expenses successfully exported to [white_dim]'{output_path}'[/white_dim].[/success]")
 
     except FileNotFoundError:
-        click.echo("Error: No expenses file was found.")
+        console.print("[danger]Error:[/danger] No expenses file was found.")
     except PermissionError:
-        click.echo(f"Error: Permission denied to write to '{output}'.")
+        console.print(f"[danger]Error:[/danger] Permission denied to write to [white_dim]'{output_path}'[/white_dim].")

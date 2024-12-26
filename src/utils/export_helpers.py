@@ -1,6 +1,8 @@
+import re
 import csv
 import json
 from openpyxl import Workbook
+from pathlib import Path
 
 
 def write_csv(output_path, data, budget_info=None):
@@ -88,3 +90,23 @@ def write_excel(output_path, data, budget_info=None):
         ws.append(["Remaining Budget", f"${budget_info['remaining_budget']:.2f}"])
 
     wb.save(output_path)
+
+
+def generate_unique_filename(output_path):
+    """
+    Generates a unique filename by appending a number suffix (e.g., 'file(1).json').
+
+    Args:
+        output_path (Path): Path object representing the desired file path.
+
+    Returns:
+        Path: A unique file path with a numeric suffix if needed.
+    """
+    counter = 1
+    original_stem = re.sub(r"\(\d+\)$", "", output_path.stem)
+
+    while output_path.exists():
+        output_path = output_path.parent / f"{original_stem}({counter}){output_path.suffix}"
+        counter += 1
+
+    return output_path
