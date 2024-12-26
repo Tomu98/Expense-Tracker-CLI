@@ -11,6 +11,7 @@ custom_theme = Theme({
     "id": "#FFFFFF italic dim",
     "date": "#69d3ff italic",
     "category": "#cc73ff italic",
+    "category2": "#cc73ff",
     "amount": "#76ab2c italic",
     "amount2": "#ce4040 italic",
     "budget": "#008d5c italic",

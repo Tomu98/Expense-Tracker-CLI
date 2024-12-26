@@ -1,6 +1,7 @@
 import click
 import csv
 from datetime import datetime
+from styles.colors import console
 from utils.budget import read_budget, calculate_monthly_expenses
 from utils.data_manager import CSV_FILE_PATH, filter_expenses
 from utils.validators import validate_date, validate_category
@@ -51,7 +52,7 @@ def summary(month, year, category):
         # Show results
         if target_month or year or target_category:
             if filtered_expense == 0.00:
-                click.echo("No expenses found for the specified filters.")
+                console.print("[warning]No expenses found for the specified filters.[/warning]")
                 return
 
             filter_desc = []
@@ -64,22 +65,22 @@ def summary(month, year, category):
                 filter_desc.append(f"category '{target_category}'")
 
             filter_text = " and ".join(filter_desc)
-            click.echo(f"Total expenses for {filter_text}: ${filtered_expense:.2f}")
+            console.print(f"\n[white]Total expenses for {filter_text}: [amount]${filtered_expense:.2f}[/amount][/white]")
 
             if budget_amount is not None:
                 current_expenses = calculate_monthly_expenses(target_year, target_month)
                 remaining_budget = budget_amount - current_expenses
-                click.echo(f"\nBudget for {filter_text}: ${budget_amount:.2f}")
-                click.echo(f"Remaining budget: ${remaining_budget:.2f}")
+                console.print(f"\n[white]Budget for {filter_text}: [budget]${budget_amount:.2f}[/budget][/white]")
+                console.print(f"[white]Remaining budget: [budget2]${remaining_budget:.2f}[budget2][/white]")
 
             # Show breakdown only if no category is specified
             if not target_category:
-                click.echo("\nBreakdown by category:")
+                console.print("\n[white]Breakdown by category:[/white]")
                 for cat, amount in category_summary.items():
-                    click.echo(f"- {cat}: ${amount:.2f}")
+                    console.print(f"- [category2]{cat}:[/category2] [amount]${amount:.2f}[/amount]")
 
         else:
-            click.echo(f"Total expenses: ${total_expense:.2f}")
+            console.print(f"\n[white]Total expenses:[/white] [amount]${total_expense:.2f}[/amount]\n")
 
     except FileNotFoundError:
-        click.echo("Error: No expenses file was found.")
+        console.print("[danger]Error:[/danger] No expenses file was found.")
