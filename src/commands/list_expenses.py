@@ -1,7 +1,7 @@
 import click
 import csv
-from rich.console import Console
 from rich.table import Table
+from styles.colors import console
 from utils.data_manager import CSV_FILE_PATH
 from utils.validators import validate_category, validate_amount, validate_date
 
@@ -22,14 +22,14 @@ def list_expenses(category, start_date, end_date, min_amount, max_amount):
             reader = csv.DictReader(file)
             expenses = [row for row in reader]
     except FileNotFoundError:
-        click.echo("Error: No expenses file was found.")
+        console.print("[danger]Error:[/danger] No expenses file was found.")
         return
     except Exception as e:
-        click.echo(f"Error reading file: {e}")
+        console.print(f"[danger]Error reading file:[/danger] {e}")
         return
 
     if not expenses:
-        click.echo("No expenses recorded.")
+        console.print("[warning]No expenses recorded.[/warning]")
         return
 
     # Filters
@@ -55,30 +55,36 @@ def list_expenses(category, start_date, end_date, min_amount, max_amount):
             expenses = [expense for expense in expenses if float(expense["Amount"]) <= max_amount]
 
     except click.BadParameter as e:
-        click.echo(e.message)
+        console.print(f"[danger]{e.message}[/danger]")
         return
 
     if not expenses:
-        click.echo("No expenses matched the given filters.")
+        console.print("[warning]No expenses matched the given filters.[/warning]")
         return
 
-    # Create table
-    table = Table(title="Filtered Expenses" if category or start_date or end_date or min_amount or max_amount else "Expenses")
+    # Calculate total amount
+    total_amount = sum(float(expense["Amount"]) for expense in expenses)
 
-    table.add_column("ID", style="dim", width=6)
-    table.add_column("Date", justify="center", width=12)
-    table.add_column("Description", justify="left", max_width=60)
-    table.add_column("Category", justify="left", width=15)
-    table.add_column("Amount", justify="right", width=10)
+    # Create table
+    table = Table(
+        title="\nFiltered Expenses" if category or start_date or end_date or min_amount or max_amount 
+        else "\nExpenses",
+        row_styles=["none", "dim"],
+    )
+
+    table.add_column("ID", style="id", min_width=6)
+    table.add_column("Date", justify="center", style="date", min_width=12)
+    table.add_column("Description", justify="left", style="white", min_width=15, max_width=70)
+    table.add_column("Category", justify="left", style="category", min_width=15)
+    table.add_column("Amount", justify="right", style="amount", min_width=10)
 
     for expense in expenses:
         table.add_row(
-            expense["ID"],
-            expense["Date"],
-            expense["Description"],
-            expense["Category"],
-            f"${expense['Amount']}"
+            f"{expense['ID']}",
+            f"{expense['Date']}",
+            f"{expense['Description']}",
+            f"{expense['Category']}",
+            f"$ {float(expense['Amount']):.2f}"
         )
 
-    console = Console()
     console.print(table)
