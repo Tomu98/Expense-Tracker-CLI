@@ -62,9 +62,6 @@ def list_expenses(category, start_date, end_date, min_amount, max_amount):
         console.print("[warning]No expenses matched the given filters.[/warning]")
         return
 
-    # Calculate total amount
-    total_amount = sum(float(expense["Amount"]) for expense in expenses)
-
     # Create table
     table = Table(
         title="\nFiltered Expenses" if category or start_date or end_date or min_amount or max_amount 

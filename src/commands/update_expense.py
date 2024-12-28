@@ -8,7 +8,7 @@ from utils.validators import validate_date, validate_category, validate_descript
 
 @click.command()
 @click.option("--id", type=int, prompt="ID", help="ID of the expense to be updated.")
-@click.option("--date", type=str, help="New date (YYYYY-MM-DD).")
+@click.option("--date", type=str, help="New date (YYYY-MM-DD).")
 @click.option("--category", type=str, help="New category.")
 @click.option("--description", type=str, help="New description.")
 @click.option("--amount", type=float, help="New amount.")
@@ -22,7 +22,7 @@ def update_expense(id, date, category, description, amount):
             raise click.BadParameter("ID must be a positive number greater than 0.", param_hint="--id")
 
         if not (date or category or description or amount):
-            raise click.UsageError("You must provide at least one field to update (e.g., --date.)")
+            raise click.UsageError("You must provide at least one field to update (e.g., --date).")
 
         # Validate that the file exists
         try:
@@ -36,25 +36,58 @@ def update_expense(id, date, category, description, amount):
         # Find the ID and update if it exists
         expense_found = False
         updated_date = None
+        update_summary = []
         for expense in expenses:
             if expense["ID"] == str(id):
                 expense_found = True
 
+                # Track and compare changes
+                original_date = expense["Date"]
+                original_category = expense["Category"]
+                original_description = expense["Description"]
+                original_amount = expense["Amount"]
+
                 if date:
                     validated_date = validate_date(date)
+                    if original_date != validated_date:
+                        update_summary.append(f"[white]- New Date: [white_dim]{original_date}[/white_dim] ---> [date]{validated_date}[/date][/white]")
+                    else:
+                        update_summary.append(f"[white]- Date: [date]{original_date}[/date][/white]")
                     expense["Date"] = validated_date
                     updated_date = validated_date
                 else:
-                    updated_date = expense["Date"]
+                    update_summary.append(f"[white]- Date: [date]{original_date}[/date][/white]")
+                    updated_date = original_date
 
                 if category:
-                    expense["Category"] = validate_category(category)
+                    validated_category = validate_category(category)
+                    if original_category != validated_category:
+                        update_summary.append(f"[white]- New Category: [white_dim]'{original_category}'[/white_dim] ---> [category]'{validated_category}'[/category][/white]")
+                    else:
+                        update_summary.append(f"[white]- Category: [category]'{original_category}'[/category][/white]")
+                    expense["Category"] = validated_category
+                else:
+                    update_summary.append(f"[white]- Category: [category]'{original_category}'[category][/white]")
 
                 if description:
-                    expense["Description"] = validate_description(description)
+                    validated_description = validate_description(description)
+                    if original_description != validated_description:
+                        update_summary.append(f"[white]- New Description: [white_dim]'{original_description}'[/white_dim] ---> [description]'{validated_description}'[/description][white]")
+                    else:
+                        update_summary.append(f"[white]- Description: [description]'{original_description}'[/description][white]")
+                    expense["Description"] = validated_description
+                else:
+                    update_summary.append(f"[white]- Description: [description]'{original_description}'[/description][white]")
 
                 if amount is not None:
-                    expense["Amount"] = f"{validate_amount(amount):.2f}"
+                    validated_amount = f"{validate_amount(amount):.2f}"
+                    if original_amount != validated_amount:
+                        update_summary.append(f"[white]- New Amount: [white_dim]${original_amount}[/white_dim] ---> [amount]${validated_amount}[/amount][white]")
+                    else:
+                        update_summary.append(f"[white]- Amount: [amount]${original_amount}[/amount][white]")
+                    expense["Amount"] = validated_amount
+                else:
+                    update_summary.append(f"[white]- Amount: [amount]${original_amount}[/amount][white]")
 
                 break
 
@@ -68,12 +101,10 @@ def update_expense(id, date, category, description, amount):
             writer.writeheader()
             writer.writerows(expenses)
 
-        console.print(
-            f"\n[success]Expense with ID [id]{id}[/id] updated successfully:[/success]\n"
-            f"- [white]Category: [category]'{category}'[/category]\n"
-            f"- Amount: [amount]${amount:.2f}[/amount]\n"
-            f"- Date: [date]{date}[/date][/white]\n"
-        )
+        # Print the update summary
+        console.print(f"\n[success]Expense with ID [id]{id}[/id] updated successfully:[/success]")
+        for change in update_summary:
+            console.print(change)
 
         # Check if the updated expense affects the monthly budget
         expense_year, expense_month = map(int, updated_date.split("-")[:2])

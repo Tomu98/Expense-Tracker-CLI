@@ -55,6 +55,7 @@ def summary(month, year, category):
                 console.print("[warning]No expenses found for the specified filters.[/warning]")
                 return
 
+            # Show total expenses
             filter_desc = []
             if target_month:
                 month_name = datetime(target_year, target_month, 1).strftime("%B")
@@ -67,11 +68,15 @@ def summary(month, year, category):
             filter_text = " and ".join(filter_desc)
             console.print(f"\n[white]Total expenses for {filter_text}: [amount]${filtered_expense:.2f}[/amount][/white]")
 
+            # Show budget information
             if budget_amount is not None:
                 current_expenses = calculate_monthly_expenses(target_year, target_month)
                 remaining_budget = budget_amount - current_expenses
-                console.print(f"\n[white]Budget for {filter_text}: [budget]${budget_amount:.2f}[/budget][/white]")
-                console.print(f"[white]Remaining budget: [budget2]${remaining_budget:.2f}[budget2][/white]")
+                console.print(f"\n[white]Budget for {month_name} {target_year}: [budget]${budget_amount:.2f}[/budget][/white]")
+                if remaining_budget < 0:
+                    console.print(f"[white]You've exceeded your budget by [amount2]${abs(remaining_budget):.2f}[/amount2][/white]")
+                else:
+                    console.print(f"[white]Remaining budget: [budget2]${remaining_budget:.2f}[/budget2][/white]")
 
             # Show breakdown only if no category is specified
             if not target_category:
