@@ -59,6 +59,16 @@ def update_expense(id, date, category, description, amount):
                     update_summary.append(f"[white]- Date: [date]{original_date}[/date][/white]")
                     updated_date = original_date
 
+                if amount is not None:
+                    validated_amount = f"{validate_amount(amount):.2f}"
+                    if original_amount != validated_amount:
+                        update_summary.append(f"[white]- New Amount: [white_dim]${original_amount}[/white_dim] ---> [amount]${validated_amount}[/amount][white]")
+                    else:
+                        update_summary.append(f"[white]- Amount: [amount]${original_amount}[/amount][white]")
+                    expense["Amount"] = validated_amount
+                else:
+                    update_summary.append(f"[white]- Amount: [amount]${original_amount}[/amount][white]")
+
                 if category:
                     validated_category = validate_category(category)
                     if original_category != validated_category:
@@ -78,16 +88,6 @@ def update_expense(id, date, category, description, amount):
                     expense["Description"] = validated_description
                 else:
                     update_summary.append(f"[white]- Description: [description]'{original_description}'[/description][white]")
-
-                if amount is not None:
-                    validated_amount = f"{validate_amount(amount):.2f}"
-                    if original_amount != validated_amount:
-                        update_summary.append(f"[white]- New Amount: [white_dim]${original_amount}[/white_dim] ---> [amount]${validated_amount}[/amount][white]")
-                    else:
-                        update_summary.append(f"[white]- Amount: [amount]${original_amount}[/amount][white]")
-                    expense["Amount"] = validated_amount
-                else:
-                    update_summary.append(f"[white]- Amount: [amount]${original_amount}[/amount][white]")
 
                 break
 

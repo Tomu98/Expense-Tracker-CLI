@@ -43,10 +43,10 @@ def add_expense(category, description, amount):
     console.print(
     "\n[success]Expense added successfully:[/success]\n"
     f"[white]- ID: [id]{new_id}[/id]\n[/white]"
+    f"[white]- Date: [date]{expense_date}[/date][/white]\n"
+    f"[white]- Amount: [amount]${amount:.2f}[/amount][/white]\n"
     f"[white]- Category: [category]'{category}'[/category][/white]\n"
     f"[white]- Description: [description]'{description}'[/description][/white]\n"
-    f"[white]- Amount: [amount]${amount:.2f}[/amount][/white]\n"
-    f"[white]- Date: [date]{expense_date}[/date][/white]\n"
     )
 
     budget_warning_message = check_budget_warning(current_year, current_month)

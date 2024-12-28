@@ -2,7 +2,6 @@ import re
 import csv
 import json
 from openpyxl import Workbook
-from pathlib import Path
 
 
 def write_csv(output_path, data, budget_info=None):
