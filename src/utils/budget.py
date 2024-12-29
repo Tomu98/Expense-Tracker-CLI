@@ -3,7 +3,6 @@ import json
 import click
 from pathlib import Path
 from datetime import datetime
-from styles.colors import console
 from utils.data_manager import CSV_FILE_PATH
 
 

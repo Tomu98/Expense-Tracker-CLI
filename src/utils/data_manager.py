@@ -8,7 +8,7 @@ from collections import defaultdict
 
 DATA_DIR = Path("data")
 CSV_FILE_PATH = DATA_DIR / "expenses.csv"
-FIELD_NAMES = ["ID", "Date", "Description", "Category", "Amount"]
+FIELD_NAMES = ["ID", "Date", "Amount", "Category", "Description"]
 
 
 def initialize_csv():

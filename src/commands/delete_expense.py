@@ -35,13 +35,13 @@ def delete_expense(id, all):
                             writer.writeheader()
                         console.print("[success]All expenses have been deleted successfully.[/success]")
                     except Exception as e:
-                        console.print(f"[danger]Error when deleting all expenses:[/danger] {e}")
+                        console.print(f"[error]Error when deleting all expenses:[/error] {e}")
                     return
                 elif confirmation in ["n", "no"]:
                     console.print("[warning]Deletion cancelled.[/warning]")
                     return
                 else:
-                    console.print("[warning]Please enter a valid response:[/warning] 'y' or 'n' (or 'yes'/'no').")
+                    console.print("[warning]Please enter a valid response:[/warning] [success]'y'[/success] or [error]'n'[/error] (or [success]'yes'[/success]/[error]'no'[/error]).")
 
         if not id or int(id) <= 0:
             raise click.BadParameter("You must provide a valid positive ID.", param_hint="'--id'")
@@ -49,7 +49,7 @@ def delete_expense(id, all):
         updated_expenses = [expense for expense in expenses if int(expense["ID"]) != id]
 
         if len(updated_expenses) == len(expenses):
-            console.print(f"[danger]No expense found with ID [id]{id}[/id].[/danger]")
+            console.print(f"[error]No expense found with ID [id]{id}[/id].[/error]")
             return
 
         with open(CSV_FILE_PATH, "w", newline="") as file:
@@ -60,6 +60,6 @@ def delete_expense(id, all):
         console.print(f"[success]Expense with ID [id]{id}[/id] has been deleted successfully.[/success]")
 
     except FileNotFoundError:
-        console.print("[danger]Error:[/danger] Expense file not found.")
+        console.print("[error]Error:[/error] Expense file not found.")
     except Exception as e:
-        console.print(f"[danger]Error when eliminating expense:[/danger] {e}")
+        console.print(f"[error]Error when eliminating expense:[/error] {e}")

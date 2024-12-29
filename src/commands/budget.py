@@ -81,7 +81,7 @@ def budget(current, all, specific):
     budgets = read_budget()
 
     if not budgets:
-        console.print("[bold red]No budgets found.[/bold red]")
+        console.print("[warning]No budgets found.[/warning]")
         return
 
     if not current and not all and not specific:
