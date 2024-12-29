@@ -88,4 +88,4 @@ def summary(month, year, category):
             console.print(f"\n[white]Total expenses:[/white] [amount]${total_expense:.2f}[/amount]\n")
 
     except FileNotFoundError:
-        console.print("[danger]Error:[/danger] No expenses file was found.")
+        console.print("[error]Error:[/error] No expenses file was found.")

@@ -25,6 +25,21 @@ def validate_date(date: str):
         )
 
 
+def validate_amount(amount: float):
+    """
+    Ensures the amount is positive, below $100,000, and significant after rounding.
+    """
+    max_value = 100000
+    if amount <= 0 or amount > max_value:
+        raise click.BadParameter(f"Amount must be positive and not exceed ${max_value}.", param_hint="'--amount'")
+
+    rounded_amount = round(amount, 2)
+    if rounded_amount <= 0:
+        raise click.BadParameter("Amount must be significant (greater than $0.00 after rounding).", param_hint="'--amount'")
+
+    return rounded_amount
+
+
 def validate_category(category: str):
     """
     Ensures the category is in the list of valid options.
@@ -57,21 +72,6 @@ def validate_description(description: str):
         raise click.BadParameter("Description must be no more than 60 characters.", param_hint="'--description'")
 
     return description
-
-
-def validate_amount(amount: float):
-    """
-    Ensures the amount is positive, below $100,000, and significant after rounding.
-    """
-    max_value = 100000
-    if amount <= 0 or amount > max_value:
-        raise click.BadParameter(f"Amount must be positive and not exceed ${max_value}.", param_hint="'--amount'")
-
-    rounded_amount = round(amount, 2)
-    if rounded_amount <= 0:
-        raise click.BadParameter("Amount must be significant (greater than $0.00 after rounding).", param_hint="'--amount'")
-
-    return rounded_amount
 
 
 def validate_budget_amount(amount: float):

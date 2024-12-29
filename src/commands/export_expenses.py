@@ -1,6 +1,5 @@
 import click
 import csv
-from datetime import datetime
 from pathlib import Path
 from styles.colors import console
 from utils.budget import get_budget_summary
@@ -91,6 +90,6 @@ def export(output, month, year, category, include_budget):
         console.print(f"[success]Expenses successfully exported to [white_dim]'{output_path}'[/white_dim].[/success]")
 
     except FileNotFoundError:
-        console.print("[danger]Error:[/danger] No expenses file was found.")
+        console.print("[error]Error:[/error] No expenses file was found.")
     except PermissionError:
-        console.print(f"[danger]Error:[/danger] Permission denied to write to [white_dim]'{output_path}'[/white_dim].")
+        console.print(f"[error]Error:[/error] Permission denied to write to [white_dim]'{output_path}'[/white_dim].")

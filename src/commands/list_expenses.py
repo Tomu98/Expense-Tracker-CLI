@@ -3,7 +3,7 @@ import csv
 from rich.table import Table
 from styles.colors import console
 from utils.data_manager import CSV_FILE_PATH
-from utils.validators import validate_category, validate_amount, validate_date
+from utils.validators import validate_date, validate_amount, validate_category
 
 
 @click.command()
@@ -22,10 +22,10 @@ def list_expenses(category, start_date, end_date, min_amount, max_amount):
             reader = csv.DictReader(file)
             expenses = [row for row in reader]
     except FileNotFoundError:
-        console.print("[danger]Error:[/danger] No expenses file was found.")
+        console.print("[error]Error:[/error] No expenses file was found.")
         return
     except Exception as e:
-        console.print(f"[danger]Error reading file:[/danger] {e}")
+        console.print(f"[error]Error reading file:[/error] {e}")
         return
 
     if not expenses:
@@ -55,7 +55,7 @@ def list_expenses(category, start_date, end_date, min_amount, max_amount):
             expenses = [expense for expense in expenses if float(expense["Amount"]) <= max_amount]
 
     except click.BadParameter as e:
-        console.print(f"[danger]{e.message}[/danger]")
+        console.print(f"[error]{e.message}[/error]")
         return
 
     if not expenses:

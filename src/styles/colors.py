@@ -7,7 +7,7 @@ custom_theme = Theme({
     "white_dim": "#FFFFFF dim",
     "success": "#71d200 bold",
     "warning": "#ffd700 bold",
-    "danger": "#ff0d0d bold",
+    "error": "#ff0d0d bold",
     "info": "#00ffe0",
     "id": "#ff55db italic",
     "date": "#249cff italic",

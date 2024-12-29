@@ -3,16 +3,16 @@ import csv
 from styles.colors import console
 from utils.budget import check_budget_warning
 from utils.data_manager import CSV_FILE_PATH, FIELD_NAMES
-from utils.validators import validate_date, validate_category, validate_description, validate_amount
+from utils.validators import validate_date, validate_amount, validate_category, validate_description
 
 
 @click.command()
 @click.option("--id", type=int, prompt="ID", help="ID of the expense to be updated.")
 @click.option("--date", type=str, help="New date (YYYY-MM-DD).")
+@click.option("--amount", type=float, help="New amount.")
 @click.option("--category", type=str, help="New category.")
 @click.option("--description", type=str, help="New description.")
-@click.option("--amount", type=float, help="New amount.")
-def update_expense(id, date, category, description, amount):
+def update_expense(id, date, amount, category, description):
     """
     Allows the user to update an existing expense by ID.
     It validates inputs and checks if the updated expense exceeds the monthly budget limit.
@@ -30,7 +30,7 @@ def update_expense(id, date, category, description, amount):
                 reader = csv.DictReader(file)
                 expenses = list(reader)
         except FileNotFoundError:
-            console.print("[danger]Error:[/danger] Expense file not found.")
+            console.print("[error]Error:[/error] Expense file not found.")
             return
 
         # Find the ID and update if it exists
@@ -92,7 +92,7 @@ def update_expense(id, date, category, description, amount):
                 break
 
         if not expense_found:
-            console.print(f"[danger]Error:[/danger] No expense found with ID [id]{id}[/id].")
+            console.print(f"[error]Error:[/error] No expense found with ID [id]{id}[/id].")
             return
 
         # Overwrite file with updated data
@@ -115,8 +115,8 @@ def update_expense(id, date, category, description, amount):
             console.print(budget_warning_message)
 
     except click.BadParameter as e:
-        console.print(f"[danger]Validation error:[/danger] {e}")
+        console.print(f"[error]Validation error:[/error] {e}")
     except click.UsageError as e:
-        console.print(f"[danger]Usage error:[/danger] {e}")
+        console.print(f"[error]Usage error:[/error] {e}")
     except Exception as e:
-        console.print(f"[danger]Error updating expense:[/danger] {e}")
+        console.print(f"[error]Error updating expense:[/error] {e}")
