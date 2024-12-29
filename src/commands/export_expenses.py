@@ -5,7 +5,7 @@ from pathlib import Path
 from styles.colors import console
 from utils.budget import get_budget_summary
 from utils.data_manager import CSV_FILE_PATH
-from utils.export_helpers import write_csv, write_json, write_excel, generate_unique_filename
+from utils.export_helpers import write_csv, write_json, write_excel, generate_unique_filename, filter_expenses
 from utils.validators import validate_date, validate_category
 
 
@@ -21,9 +21,6 @@ def export(output, month, year, category, include_budget):
     Supports including budget information for the selected month.
     """
     try:
-        current_date = datetime.now()
-        target_year = year if year else current_date.year
-
         # Ensure the exports directory exists
         exports_dir = Path("exports")
         exports_dir.mkdir(parents=True, exist_ok=True)
@@ -43,38 +40,45 @@ def export(output, month, year, category, include_budget):
         if category:
             category = validate_category(category)
         if year:
-            validate_date(f"{target_year}-01-01")
+            validate_date(f"{year}-01-01")
         if month:
             if not (1 <= month <= 12):
                 raise click.BadParameter(f"Invalid month '{month}'. Please specify a value between 1 and 12.", param_hint="'--month'")
-            validate_date(f"{target_year}-{month:02d}-01")
+            if year:
+                validate_date(f"{year}-{month:02d}-01")
 
         # Read the source CSV file
         with open(CSV_FILE_PATH, "r", newline="", encoding="utf-8") as file:
             reader = csv.DictReader(file)
-            filtered_expenses = []
 
-            for row in reader:
-                try:
-                    date = datetime.strptime(row["Date"], "%Y-%m-%d")
-                    matches_date = (not month or date.month == month) and date.year == target_year
-                    matches_category = not category or row["Category"].capitalize() == category
+            # Convert rows to list of dictionaries
+            expenses = [
+                {
+                    "ID": row["ID"],
+                    "Date": row["Date"],
+                    "Amount": row["Amount"],
+                    "Category": row["Category"],
+                    "Description": row["Description"]
+                }
+                for row in reader
+            ]
 
-                    if matches_date and matches_category:
-                        filtered_expenses.append(row)
+        # Filter expenses
+        filtered_expenses = filter_expenses(
+            expenses=expenses,
+            year=year,
+            month=month,
+            category=category
+        )
 
-                except ValueError as e:
-                    console.print(f"[danger]Skipping row due to error:[/danger] {e}")
-
-        # Check if there are any expenses
         if not filtered_expenses:
             console.print("[warning]No expenses match the specified filters.[/warning]")
             return
 
-        # Calculate budget information if necessary
+        # Budget information
         budget_info = None
-        if include_budget and month:
-            budget_info = get_budget_summary(year=target_year, month=month)
+        if include_budget and month and year:
+            budget_info = get_budget_summary(year=year, month=month)
 
         # Write the filtered expenses to the output file
         if output_format == ".csv":

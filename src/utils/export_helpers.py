@@ -15,7 +15,7 @@ def write_csv(output_path, data, budget_info=None):
                                       and remaining budget. Defaults to None.
     """
     with open(output_path, "w", newline="", encoding="utf-8") as file:
-        writer = csv.DictWriter(file, fieldnames=["ID", "Date", "Description", "Category", "Amount"])
+        writer = csv.DictWriter(file, fieldnames=["ID", "Date", "Amount", "Category", "Description"])
         writer.writeheader()
 
         # Write expenses
@@ -49,13 +49,23 @@ def write_json(output_path, data, budget_info=None):
         budget_info (dict, optional): Budget summary including budget amount, current expenses,
                                       and remaining budget. Defaults to None.
     """
-    output = {"expenses": data}
+    output = {"expenses": [
+        {
+            "ID": item["ID"],
+            "Date": item["Date"],
+            "Amount": item["Amount"],
+            "Category": item["Category"],
+            "Description": item["Description"],
+        } for item in data
+    ]}
+
     if budget_info:
         output["budget_summary"] = {
             "Budget Amount": budget_info["budget_amount"],
             "Current Expenses": budget_info["current_expenses"],
             "Remaining Budget": budget_info["remaining_budget"]
         }
+
     with open(output_path, "w", encoding="utf-8") as file:
         json.dump(output, file, indent=4, ensure_ascii=False)
 
@@ -75,10 +85,10 @@ def write_excel(output_path, data, budget_info=None):
     ws.title = "Expenses"
 
     # Write headers and data
-    headers = ["ID", "Date", "Description", "Category", "Amount"]
+    headers = ["ID", "Date", "Amount", "Category", "Description"]
     ws.append(headers)
     for row in data:
-        ws.append([row["ID"], row["Date"], row["Description"], row["Category"], row["Amount"]])
+        ws.append([row["ID"], row["Date"], row["Amount"], row["Category"], row["Description"]])
 
     # Write budget information
     if budget_info:
@@ -109,3 +119,28 @@ def generate_unique_filename(output_path):
         counter += 1
 
     return output_path
+
+
+def filter_expenses(expenses, year=None, month=None, category=None):
+    """
+    Filters expenses based on year, month, and/or category.
+
+    Args:
+        expenses (list of dict): List of expenses to filter.
+        year (int, optional): Target year for filtering. Defaults to None.
+        month (int, optional): Target month for filtering. Defaults to None.
+        category (str, optional): Target category for filtering. Defaults to None.
+
+    Returns:
+        list of dict: Filtered list of expenses.
+    """
+    filtered = []
+
+    for row in expenses:
+        date = row["Date"]
+        matches_date = (not year or date.year == year) and (not month or date.month == month)
+        matches_category = not category or row["Category"].capitalize() == category
+        if matches_date and matches_category:
+            filtered.append(row)
+
+    return filtered
