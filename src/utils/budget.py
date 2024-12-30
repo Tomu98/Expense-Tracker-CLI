@@ -3,6 +3,7 @@ import json
 import click
 from pathlib import Path
 from datetime import datetime
+from styles.colors import console
 from utils.data_manager import CSV_FILE_PATH
 
 
@@ -59,7 +60,7 @@ def update_budget(month: int, year: int, amount: float):
     key = f"{year}-{month:02d}"
 
     if key in budgets:
-        click.echo(f"Warning: A budget for {year}-{month:02d} already exists.")
+        console.print(f"\n[warning]Warning:[/warning] A budget for [date]{year}-{month:02d}[/date] already exists.")
 
         while True:
             confirmation = click.prompt(f"Do you want to update the budget for {year}-{month:02d}? (y/n)", type=str).lower()
@@ -67,17 +68,17 @@ def update_budget(month: int, year: int, amount: float):
             if confirmation in ['y', 'yes']:
                 budgets[key] = amount
                 save_budget(budgets)
-                click.echo(f"Budget for {year}-{month:02d} updated to ${amount:.2f}.")
+                console.print(f"\nBudget for [date]{year}-{month:02d}[/date] updated to [budget]${amount:.2f}[/budget].\n")
                 return
             elif confirmation in ['n', 'no']:
-                click.echo(f"Budget for {year}-{month:02d} remains unchanged at ${amount:.2f}.")
+                console.print(f"\nBudget for [date]{year}-{month:02d}[/date] remains unchanged at [budget]${amount:.2f}[/budget].\n")
                 return
             else:
-                click.echo("Invalid input. Please enter 'y/yes' or 'n/no'.")
+                console.print("\n[warning]Invalid input[/warning]. Please enter [success]'y/yes'[/success] or [error]'n/no'[/error].\n")
     else:
         budgets[key] = amount
         save_budget(budgets)
-        click.echo(f"Budget for {year}-{month:02d} set at ${amount:.2f}.")
+        console.print(f"\nBudget for [date]{year}-{month:02d}[/date] set at [budget]${amount:.2f}[/budget].\n")
 
 
 def calculate_monthly_expenses(year: int, month: int) -> float:
@@ -130,13 +131,13 @@ def check_budget_warning(year: int, month: int) -> str:
 
         if current_expenses > budget_amount:
             return (
-                f"[warning]Warning:[/warning] [white]You have exceeded your monthly budget for "
-                f"[amount]${budget_amount:.2f}[/amount] with a total expense of [amount2]${current_expenses:.2f}[/amount2][/white].\n"
+                f"[warning]Warning:[/warning] [white]You have exceeded your monthly budget for [/white]"
+                f"[white][amount]${budget_amount:.2f}[/amount] with a total expense of [amount2]${current_expenses:.2f}[/amount2][/white].\n"
             )
         else:
             remaining = budget_amount - current_expenses
             return (
-                f"[info]Budget information:[/info]\n"
+                f"\n[info]Budget information:[/info]\n"
                 f"- Monthly budget: [budget]${budget_amount:.2f}[/budget]\n"
                 f"- Current expenses: [amount]${current_expenses:.2f}[/amount]\n"
                 f"- Remaining budget: [budget2]${remaining:.2f}[/budget2]\n"

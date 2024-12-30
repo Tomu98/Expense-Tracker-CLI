@@ -11,7 +11,7 @@ from utils.validators import validate_date, validate_amount, validate_category, 
 @click.option("--date", type=str, help="New date (YYYY-MM-DD).")
 @click.option("--amount", type=float, help="New amount.")
 @click.option("--category", type=str, help="New category.")
-@click.option("--description", type=str, help="New description.")
+@click.option("--description", type=str, help="New description. You can use quotes for multiple words.")
 def update_expense(id, date, amount, category, description):
     """
     Allows the user to update an existing expense by ID.

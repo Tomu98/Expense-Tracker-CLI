@@ -9,7 +9,7 @@ from commands.budget import set_budget, delete_budget, budget
 
 
 @click.group()
-@click.version_option(version="0.16.9", prog_name="Expense Tracker CLI")
+@click.version_option(version="0.16.10", prog_name="Expense Tracker CLI")
 def cli():
     pass
 
@@ -30,8 +30,3 @@ if __name__ == '__main__':
     cli()
 
 # Agregar tests
-
-# Que al agregar --description ayudar a que el usuario tenga que poner comillas simples o dobles para que no haya problemas con el comando al poner espacios
-# Color y tamaños a la tabla de budget
-
-# Errores en budget.py y tengo que mejorar sobre los colores y mensajes
