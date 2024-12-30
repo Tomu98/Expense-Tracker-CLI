@@ -10,7 +10,7 @@ from utils.validators import validate_date, validate_amount, validate_category, 
 @click.option("--date", type=str, default=None, help="Date of the expense (optional).")
 @click.option("--amount", type=float, prompt="Amount", help="Amount of the expense.")
 @click.option("--category", type=str, prompt="Category", help="Category of the expense.")
-@click.option("--description", type=str, default=None, help="Expense description.")
+@click.option("--description", type=str, default=None, help="Expense description. You can use quotes for multiple words.")
 def add_expense(date, amount, category, description):
     """
     Adds a new expense, including category, description, and amount.

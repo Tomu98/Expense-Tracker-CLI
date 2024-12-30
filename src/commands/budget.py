@@ -1,7 +1,7 @@
 import click
 from datetime import datetime
 from rich.table import Table
-from rich.console import Console
+from styles.colors import console
 from utils.budget import initialize_budget_file, read_budget, save_budget, update_budget, calculate_monthly_expenses
 from utils.validators import validate_budget_amount
 
@@ -61,9 +61,9 @@ def delete_budget(month, year):
     if key in budgets:
         del budgets[key]
         save_budget(budgets)
-        click.echo(f"Budget for {year}-{month:02d} has been deleted.")
+        console.print(f"\n[success]Budget for [date]{year}-{month:02d}[/date] has been deleted.[/success]\n")
     else:
-        click.echo(f"No budget found for {year}-{month:02d}.")
+        console.print(f"\n[error]No budget found for [date]{year}-{month:02d}[/date].[/error]\n")
 
 
 # View budgets
@@ -77,16 +77,14 @@ def budget(current, all, specific):
     or a specific budget by month and year. Shows budget total, current expenses,
     and the remaining difference.
     """
-    console = Console()
     budgets = read_budget()
 
     if not budgets:
-        console.print("[warning]No budgets found.[/warning]")
+        console.print("\n[warning]No budgets found.[/warning]\n")
         return
 
     if not current and not all and not specific:
-        console.print("[bold yellow]Please specify an option: --current, --all, or --specific 'YYYY-MM'.[/bold yellow]")
-        return
+        return console.print("\n[warning]Please specify an option:[/warning] [white][white_dim]--current[/white_dim], [white_dim]--all[/white_dim], or [white_dim]--specific 'YYYY-MM'[/white_dim].[/white]\n")
 
     # Validate format "YYYY-MM"
     if specific:
@@ -94,26 +92,26 @@ def budget(current, all, specific):
             specific_date = datetime.strptime(specific, "%Y-%m")
             year, month = specific_date.year, specific_date.month
         except ValueError:
-            console.print("[bold red]Invalid date format. Use 'YYYY-MM'.[/bold red]")
+            console.print("\n[error]Invalid date format[/error]: [white]Use [date]'YYYY-MM'[/date].[/white]\n")
             return
 
         # Search budget for the specific date
         key = f"{year}-{month:02d}"
         if key not in budgets:
-            console.print(f"[bold red]No budget found for {key}.[/bold red]")
+            console.print(f"\n[warning]No budget found for [date]{key}[/date].[/warning]\n")
             return
 
         budget_amount = budgets[key]
         current_expenses = calculate_monthly_expenses(year, month)
         difference = budget_amount - current_expenses
 
-        table = Table(title=f"Budget for {key}")
-        table.add_column("Month", justify="center")
-        table.add_column("Budget Total", justify="center")
-        table.add_column("Current Expenses", justify="center")
-        table.add_column("Difference", justify="center")
+        table = Table(title=f"\nBudget for {key}")
+        table.add_column("Date", justify="center", style="date", min_width=9)
+        table.add_column("Budget Total", justify="center", style="budget", min_width=15)
+        table.add_column("Current Expenses", justify="center", style="amount", min_width=15)
+        table.add_column("Difference", justify="center", min_width=15)
 
-        difference_color = "green" if difference >= 0 else "red"
+        difference_color = "budget2" if difference >= 0 else "amount2"
         table.add_row(
             key,
             f"${budget_amount:.2f}",
@@ -131,20 +129,20 @@ def budget(current, all, specific):
         key = f"{current_year}-{current_month:02d}"
 
         if key not in budgets:
-            console.print(f"[bold red]No budget found for {current_year}-{current_month:02d}.[/bold red]")
+            console.print(f"\n[warning]No budget found for [date]{current_year}-{current_month:02d}[/date].[/warning]\n")
             return
 
         budget_amount = budgets[key]
         current_expenses = calculate_monthly_expenses(current_year, current_month)
         difference = budget_amount - current_expenses
 
-        table = Table(title=f"Budget for {current_year}-{current_month:02d}")
-        table.add_column("Month", justify="center")
-        table.add_column("Budget Total", justify="center")
-        table.add_column("Current Expenses", justify="center")
-        table.add_column("Difference", justify="center")
+        table = Table(title=f"\nBudget for {current_year}-{current_month:02d}")
+        table.add_column("Date", justify="center", style="date", min_width=9)
+        table.add_column("Budget Total", justify="center", style="budget", min_width=15)
+        table.add_column("Current Expenses", justify="center", style="amount", min_width=15)
+        table.add_column("Difference", justify="center", min_width=15)
 
-        difference_color = "green" if difference >= 0 else "red"
+        difference_color = "budget2" if difference >= 0 else "amount2"
         table.add_row(
             f"{current_year}-{current_month:02d}",
             f"${budget_amount:.2f}",
@@ -156,17 +154,17 @@ def budget(current, all, specific):
 
     # Show all budgets
     if all:
-        table = Table(title="All Budgets")
-        table.add_column("Month", justify="center")
-        table.add_column("Budget Total", justify="center")
-        table.add_column("Current Expenses", justify="center")
-        table.add_column("Difference", justify="center")
+        table = Table(title="\nAll Budgets", row_styles=["none", "dim"])
+        table.add_column("Date", justify="center", style="date", min_width=9)
+        table.add_column("Budget Total", justify="center", style="budget", min_width=15)
+        table.add_column("Current Expenses", justify="center", style="amount", min_width=15)
+        table.add_column("Difference", justify="center", min_width=15)
 
         for key, budget_amount in budgets.items():
             year, month = map(int, key.split("-"))
             current_expenses = calculate_monthly_expenses(year, month)
             difference = budget_amount - current_expenses
-            difference_color = "green" if difference >= 0 else "red"
+            difference_color = "budget2" if difference >= 0 else "amount2"
 
             table.add_row(
                 key,
