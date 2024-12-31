@@ -2,6 +2,20 @@ import re
 import csv
 import json
 from openpyxl import Workbook
+from datetime import datetime
+
+
+def validate_expenses_data(data):
+    if not isinstance(data, list) or not all(isinstance(item, dict) for item in data):
+        raise ValueError("Invalid data format. Expected a list of dictionaries.")
+
+
+def format_budget_summary(budget_info):
+    return {
+        "Budget Amount": f"${budget_info['budget_amount']:.2f}",
+        "Current Expenses": f"${budget_info['current_expenses']:.2f}",
+        "Remaining Budget": f"${budget_info['remaining_budget']:.2f}",
+    }
 
 
 def write_csv(output_path, data, budget_info=None):
@@ -14,28 +28,34 @@ def write_csv(output_path, data, budget_info=None):
         budget_info (dict, optional): Budget summary including budget amount, current expenses,
                                       and remaining budget. Defaults to None.
     """
+    validate_expenses_data(data)
+
     with open(output_path, "w", newline="", encoding="utf-8") as file:
         writer = csv.DictWriter(file, fieldnames=["ID", "Date", "Amount", "Category", "Description"])
         writer.writeheader()
-
-        # Write expenses
         writer.writerows(data)
 
-        # Write budget information (if provided)
         if budget_info:
+            summary = format_budget_summary(budget_info)
             writer.writerow({})
-            writer.writerow({"ID": "Budget Summary"})
+            writer.writerow({"ID": "Budget Information"})
             writer.writerow({
                 "Date": "Budget Amount",
-                "Description": f"${budget_info['budget_amount']:.2f}",
-                "Category": "Expenses",
-                "Amount": f"${budget_info['current_expenses']:.2f}"
+                "Description": "",
+                "Category": "",
+                "Amount": summary["Budget Amount"]
+            })
+            writer.writerow({
+                "Date": "Current Expenses",
+                "Description": "",
+                "Category": "",
+                "Amount": summary["Current Expenses"]
             })
             writer.writerow({
                 "Date": "Remaining Budget",
                 "Description": "",
                 "Category": "",
-                "Amount": f"${budget_info['remaining_budget']:.2f}"
+                "Amount": summary["Remaining Budget"]
             })
 
 
@@ -49,22 +69,11 @@ def write_json(output_path, data, budget_info=None):
         budget_info (dict, optional): Budget summary including budget amount, current expenses,
                                       and remaining budget. Defaults to None.
     """
-    output = {"expenses": [
-        {
-            "ID": item["ID"],
-            "Date": item["Date"],
-            "Amount": item["Amount"],
-            "Category": item["Category"],
-            "Description": item["Description"],
-        } for item in data
-    ]}
+    validate_expenses_data(data)
 
+    output = {"expenses": data}
     if budget_info:
-        output["budget_summary"] = {
-            "Budget Amount": budget_info["budget_amount"],
-            "Current Expenses": budget_info["current_expenses"],
-            "Remaining Budget": budget_info["remaining_budget"]
-        }
+        output["Budget Information"] = format_budget_summary(budget_info)
 
     with open(output_path, "w", encoding="utf-8") as file:
         json.dump(output, file, indent=4, ensure_ascii=False)
@@ -80,23 +89,23 @@ def write_excel(output_path, data, budget_info=None):
         budget_info (dict, optional): Budget summary including budget amount, current expenses,
                                       and remaining budget. Defaults to None.
     """
+    validate_expenses_data(data)
+
     wb = Workbook()
     ws = wb.active
     ws.title = "Expenses"
 
-    # Write headers and data
     headers = ["ID", "Date", "Amount", "Category", "Description"]
     ws.append(headers)
     for row in data:
         ws.append([row["ID"], row["Date"], row["Amount"], row["Category"], row["Description"]])
 
-    # Write budget information
     if budget_info:
+        summary = format_budget_summary(budget_info)
         ws.append([])
-        ws.append(["Budget Summary"])
-        ws.append(["Budget Amount", f"${budget_info['budget_amount']:.2f}"])
-        ws.append(["Current Expenses", f"${budget_info['current_expenses']:.2f}"])
-        ws.append(["Remaining Budget", f"${budget_info['remaining_budget']:.2f}"])
+        ws.append(["Budget Information"])
+        for key, value in summary.items():
+            ws.append([key, value])
 
     wb.save(output_path)
 
@@ -135,11 +144,19 @@ def filter_expenses(expenses, year=None, month=None, category=None):
         list of dict: Filtered list of expenses.
     """
     filtered = []
+    current_year = datetime.now().year
 
     for row in expenses:
-        date = row["Date"]
-        matches_date = (not year or date.year == year) and (not month or date.month == month)
-        matches_category = not category or row["Category"].capitalize() == category
+        try:
+            date = datetime.strptime(row["Date"], "%Y-%m-%d").date()
+        except ValueError:
+            continue
+
+        target_year = year if year else current_year
+
+        matches_date = (not month or (date.year == target_year and date.month == month))
+        matches_category = not category or row["Category"].strip().lower() == category.strip().lower()
+
         if matches_date and matches_category:
             filtered.append(row)
 

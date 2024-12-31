@@ -13,7 +13,7 @@ from utils.validators import validate_date, validate_category
 @click.option("--month", type=int, help="Filter expenses by month (1-12).")
 @click.option("--year", type=int, help="Filter expenses by year (e.g., 2024).")
 @click.option("--category", type=str, help="Filter expenses by category.")
-@click.option("--include-budget", is_flag=True, help="Include budget information in the export.")
+@click.option("--include-budget", is_flag=True, help="Include budget information in the export. Requires --month and --year.")
 def export(output, month, year, category, include_budget):
     """
     Export expenses to a file (CSV, JSON, or Excel) in the 'exports' directory, with optional filters by date or category.
@@ -30,7 +30,7 @@ def export(output, month, year, category, include_budget):
 
         # Validate output format
         if output_format not in [".csv", ".json", ".xlsx"]:
-            raise click.BadParameter("Supported formats are CSV, JSON, and Excel (.xlsx).", param_hint="'--output'")
+            raise click.BadParameter("Supported formats are '.csv', '.json', and '.xlsx' (Excel).", param_hint="'--output'")
 
         # Handle duplicate file names by appending a unique suffix
         output_path = generate_unique_filename(output_path)
@@ -45,6 +45,10 @@ def export(output, month, year, category, include_budget):
                 raise click.BadParameter(f"Invalid month '{month}'. Please specify a value between 1 and 12.", param_hint="'--month'")
             if year:
                 validate_date(f"{year}-{month:02d}-01")
+
+        # Ensure --month and --year are provided if --include-budget is used
+        if include_budget and (not month or not year):
+            raise click.UsageError("--include-budget requires both --month and --year to be specified.")
 
         # Read the source CSV file
         with open(CSV_FILE_PATH, "r", newline="", encoding="utf-8") as file:
@@ -76,7 +80,7 @@ def export(output, month, year, category, include_budget):
 
         # Budget information
         budget_info = None
-        if include_budget and month and year:
+        if include_budget:
             budget_info = get_budget_summary(year=year, month=month)
 
         # Write the filtered expenses to the output file
@@ -93,3 +97,5 @@ def export(output, month, year, category, include_budget):
         console.print("[error]Error:[/error] No expenses file was found.")
     except PermissionError:
         console.print(f"[error]Error:[/error] Permission denied to write to [white_dim]'{output_path}'[/white_dim].")
+    except Exception as e:
+        console.print(f"[error]Unexpected error:[/error] [white]{e}[/white]")
