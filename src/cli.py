@@ -9,7 +9,7 @@ from commands.budget import set_budget, delete_budget, budget
 
 
 @click.group()
-@click.version_option(version="0.16.12", prog_name="Expense Tracker CLI")
+@click.version_option(version="0.16.13", prog_name="Expense Tracker CLI")
 def cli():
     pass
 
