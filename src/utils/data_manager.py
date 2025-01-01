@@ -96,10 +96,12 @@ def filter_expenses(reader, target_year, target_month=None, target_category=None
 
             total_expense += amount
 
-            matches_date = (not target_month or date.month == target_month) and date.year == target_year
-            matches_category = not target_category or category == target_category
+            matches_year = (target_year is None or date.year == target_year)
+            matches_month = (target_month is None or date.month == target_month)
 
-            if matches_date and matches_category:
+            matches_category = (target_category is None or category == target_category)
+
+            if matches_year and matches_month and matches_category:
                 filtered_expense += amount
                 category_summary[category] += amount
 
