@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Dict
 from pathlib import Path
 from collections import defaultdict
+from styles.colors import console
 
 
 DATA_DIR = Path("data")
@@ -73,7 +74,7 @@ def parse_date(date_str):
 
 def filter_expenses(reader, target_year, target_month=None, target_category=None):
     """
-    Filters expenses by year, month, and category.
+    Filters expenses by year, month, and category for summary.
 
     Args:
         reader: CSV reader object with expense data.
@@ -106,6 +107,6 @@ def filter_expenses(reader, target_year, target_month=None, target_category=None
                 category_summary[category] += amount
 
         except ValueError as e:
-            click.echo(f"Skipping row due to error: {e}")
+            console.print(f"[error]Skipping row due to error:[/error] [white]{e}[/white]")
 
     return total_expense, filtered_expense, category_summary

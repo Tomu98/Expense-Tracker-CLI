@@ -3,21 +3,20 @@ import csv
 from pathlib import Path
 from styles.colors import console
 from utils.budget import get_budget_summary
-from utils.data_manager import CSV_FILE_PATH
+from utils.data_manager import CSV_FILE_PATH, parse_date
 from utils.export_helpers import write_csv, write_json, write_excel, generate_unique_filename, filter_expenses
-from utils.validators import validate_date, validate_category
+from utils.validators import validate_category
 
 
 @click.command()
-@click.option("--output", type=str, required=True, help="Name of the exported file (e.g., expenses.csv, expenses.json).")
-@click.option("--month", type=int, help="Filter expenses by month (1-12).")
-@click.option("--year", type=int, help="Filter expenses by year (e.g., 2024).")
+@click.option("--output", type=str, prompt="Name file", required=True, help="Name of the exported file (e.g., expenses.csv, expenses.json).")
+@click.option("--date", type=str, help="Filter expenses by year (e.g., 2025) or year and month (e.g., 2025-01).")
 @click.option("--category", type=str, help="Filter expenses by category.")
-@click.option("--include-budget", is_flag=True, help="Include budget information in the export. Requires --month and --year.")
-def export(output, month, year, category, include_budget):
+@click.option("--include-budget", is_flag=True, help="Include budget information in the export. Requires --date with year and month.")
+def export(output, date, category, include_budget):
     """
     Export expenses to a file (CSV, JSON, or Excel) in the 'exports' directory, with optional filters by date or category.
-    Supports including budget information for the selected month.
+    Supports including budget information for the selected date.
     """
     try:
         # Ensure the exports directory exists
@@ -29,26 +28,31 @@ def export(output, month, year, category, include_budget):
         output_format = output_path.suffix.lower()
 
         # Validate output format
-        if output_format not in [".csv", ".json", ".xlsx"]:
-            raise click.BadParameter("Supported formats are '.csv', '.json', and '.xlsx' (Excel).", param_hint="'--output'")
+        while output_format not in [".csv", ".json", ".xlsx"]:
+            console.print("[error]Invalid output format:[/error] [warning]Supported formats are '.csv', '.json' and '.xlsx' (Excel).[/warning]")
+            output = console.input("[white]Enter the name of the exported file [white_dim](e.g. 'expenses.json')[/white_dim]:[/white]")
+            output_path = exports_dir / output
+            output_format = output_path.suffix.lower()
 
         # Handle duplicate file names by appending a unique suffix
         output_path = generate_unique_filename(output_path)
 
         # Validate inputs
+        year = None
+        month = None
+
+        if date:
+            try:
+                year, month = parse_date(date)
+            except ValueError:
+                raise click.BadParameter("Invalid date format. Use 'YYYY' or 'YYYY-MM' and ensure it's a valid date.", param_hint="'--date'")
+
         if category:
             category = validate_category(category)
-        if year:
-            validate_date(f"{year}-01-01")
-        if month:
-            if not (1 <= month <= 12):
-                raise click.BadParameter(f"Invalid month '{month}'. Please specify a value between 1 and 12.", param_hint="'--month'")
-            if year:
-                validate_date(f"{year}-{month:02d}-01")
 
-        # Ensure --month and --year are provided if --include-budget is used
-        if include_budget and (not month or not year):
-            raise click.UsageError("--include-budget requires both --month and --year to be specified.")
+        # Ensure --date includes both year and month if --include-budget is used
+        if include_budget and (not year or not month):
+            raise click.UsageError("--include-budget requires --date with both year and month specified.")
 
         # Read the source CSV file
         with open(CSV_FILE_PATH, "r", newline="", encoding="utf-8") as file:
@@ -99,3 +103,5 @@ def export(output, month, year, category, include_budget):
         console.print(f"[error]Error:[/error] Permission denied to write to [white_dim]'{output_path}'[/white_dim].")
     except Exception as e:
         console.print(f"[error]Unexpected error:[/error] [white]{e}[/white]")
+
+# Si incluye el presupuesto, que si la fecha dada no contiene presupuesto, se muestre un mensaje de error de que no se encontró presupuesto para esa fecha pero igual se exporten los gastos
