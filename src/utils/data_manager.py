@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Dict
 from pathlib import Path
 from collections import defaultdict
+from styles.colors import console
 
 
 DATA_DIR = Path("data")
@@ -54,9 +55,26 @@ def get_next_expense_id() -> int:
         return 1
 
 
+def parse_date(date_str):
+    """
+    Parse a date string in the format 'YYYY' or 'YYYY-MM' and return the corresponding year and month.
+    If only 'YYYY' is provided, the month defaults to None.
+    """
+    try:
+        if len(date_str) == 4:
+            return int(date_str), None
+        elif len(date_str) == 7:
+            parsed_date = datetime.strptime(date_str, "%Y-%m")
+            return parsed_date.year, parsed_date.month
+        else:
+            raise ValueError
+    except ValueError:
+        raise click.BadParameter("Invalid date format. Use 'YYYY' or 'YYYY-MM' and ensure it's a valid date.", param_hint="'--date'")
+
+
 def filter_expenses(reader, target_year, target_month=None, target_category=None):
     """
-    Filters expenses by year, month, and category.
+    Filters expenses by year, month, and category for summary.
 
     Args:
         reader: CSV reader object with expense data.
@@ -79,14 +97,16 @@ def filter_expenses(reader, target_year, target_month=None, target_category=None
 
             total_expense += amount
 
-            matches_date = (not target_month or date.month == target_month) and date.year == target_year
-            matches_category = not target_category or category == target_category
+            matches_year = (target_year is None or date.year == target_year)
+            matches_month = (target_month is None or date.month == target_month)
 
-            if matches_date and matches_category:
+            matches_category = (target_category is None or category == target_category)
+
+            if matches_year and matches_month and matches_category:
                 filtered_expense += amount
                 category_summary[category] += amount
 
         except ValueError as e:
-            click.echo(f"Skipping row due to error: {e}")
+            console.print(f"[error]Skipping row due to error:[/error] [white]{e}[/white]")
 
     return total_expense, filtered_expense, category_summary

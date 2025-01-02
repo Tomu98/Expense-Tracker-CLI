@@ -9,7 +9,7 @@ from commands.budget import set_budget, delete_budget, budget
 
 
 @click.group()
-@click.version_option(version="0.16.13", prog_name="Expense Tracker CLI")
+@click.version_option(version="0.16.16", prog_name="Expense Tracker CLI")
 def cli():
     pass
 
@@ -30,3 +30,6 @@ if __name__ == '__main__':
     cli()
 
 # Agregar tests
+
+# Comprobar que --category y otras opciones de filtro funcionen correctamente
+# ver si cambio los mensajes de clic.prompt por console.input y si agrego mas mensajes asi
