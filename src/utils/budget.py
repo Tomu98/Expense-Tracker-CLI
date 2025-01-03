@@ -131,7 +131,7 @@ def check_budget_warning(year: int, month: int) -> str:
 
         if current_expenses > budget_amount:
             return (
-                f"[warning]Warning:[/warning] [white]You have exceeded your monthly budget for [/white]"
+                f"\n[warning]Warning:[/warning] [white]You have exceeded your monthly budget for [/white]"
                 f"[white][amount]${budget_amount:.2f}[/amount] with a total expense of [amount2]${current_expenses:.2f}[/amount2][/white].\n"
             )
         else:

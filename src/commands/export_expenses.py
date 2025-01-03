@@ -29,7 +29,7 @@ def export(output, date, category, include_budget):
 
         # Validate output format
         while output_format not in [".csv", ".json", ".xlsx"]:
-            console.print("[error]Invalid output format:[/error] [warning]Supported formats are '.csv', '.json' and '.xlsx' (Excel).[/warning]")
+            console.print("\n[error]Invalid output format:[/error] [warning]Supported formats are '.csv', '.json' and '.xlsx' (Excel).[/warning]")
             output = console.input("[white]Enter the name of the exported file [white_dim](e.g. 'expenses.json')[/white_dim]:[/white]")
             output_path = exports_dir / output
             output_format = output_path.suffix.lower()
@@ -79,13 +79,16 @@ def export(output, date, category, include_budget):
         )
 
         if not filtered_expenses:
-            console.print("[warning]No expenses match the specified filters.[/warning]")
+            console.print("\n[warning]No expenses match the specified filters.[/warning]\n")
             return
 
         # Budget information
         budget_info = None
         if include_budget:
             budget_info = get_budget_summary(year=year, month=month)
+            if not budget_info["budget_set"]:
+                console.print(f"\n[warning]No budget found for {year}-{month:02d}.[/warning] [white]Exporting expenses without budget information.[/white]")
+                budget_info = None
 
         # Write the filtered expenses to the output file
         if output_format == ".csv":
@@ -95,13 +98,11 @@ def export(output, date, category, include_budget):
         elif output_format == ".xlsx":
             write_excel(output_path, filtered_expenses, budget_info=budget_info)
 
-        console.print(f"[success]Expenses successfully exported to [white_dim]'{output_path}'[/white_dim].[/success]")
+        console.print(f"\n[success]Expenses successfully exported to [white_dim]'{output_path}'[/white_dim].[/success]\n")
 
     except FileNotFoundError:
-        console.print("[error]Error:[/error] No expenses file was found.")
+        console.print("\n[error]Error:[/error] No expenses file was found.\n")
     except PermissionError:
-        console.print(f"[error]Error:[/error] Permission denied to write to [white_dim]'{output_path}'[/white_dim].")
+        console.print(f"\n[error]Error:[/error] Permission denied to write to [white_dim]'{output_path}'[/white_dim].\n")
     except Exception as e:
-        console.print(f"[error]Unexpected error:[/error] [white]{e}[/white]")
-
-# Si incluye el presupuesto, que si la fecha dada no contiene presupuesto, se muestre un mensaje de error de que no se encontró presupuesto para esa fecha pero igual se exporten los gastos
+        console.print(f"\n[error]Unexpected error:[/error] [white]{e}[/white]\n")

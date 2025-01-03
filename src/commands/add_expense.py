@@ -50,7 +50,7 @@ def add_expense(date, amount, category, description):
     f"[white]- Date: [date]{expense_date}[/date][/white]\n"
     f"[white]- Amount: [amount]${amount:.2f}[/amount][/white]\n"
     f"[white]- Category: [category]'{category}'[/category][/white]\n"
-    f"[white]- Description: [description]'{description}'[/description][/white]\n"
+    f"[white]- Description: [description]'{description}'[/description][/white]"
     )
 
     budget_warning_message = check_budget_warning(current_year, current_month)
