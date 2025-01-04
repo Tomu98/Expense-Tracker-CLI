@@ -2,7 +2,7 @@ import click
 from datetime import datetime
 from rich.table import Table
 from styles.colors import console
-from utils.budget import initialize_budget_file, read_budget, save_budget, update_budget, calculate_monthly_expenses
+from src.utils.budget_helpers import initialize_budget_file, read_budget, save_budget, update_budget, calculate_monthly_expenses
 from utils.validators import validate_parse_date, validate_budget_amount
 
 

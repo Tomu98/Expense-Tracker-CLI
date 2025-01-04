@@ -25,6 +25,23 @@ def initialize_csv():
         pass
 
 
+def read_expenses():
+    """
+    Reads all expense entries from the CSV file.
+    
+    Returns:
+        list: List of dictionaries with expense data.
+    """
+    expenses = []
+    try:
+        with CSV_FILE_PATH.open("r", newline="", encoding="utf-8") as file:
+            reader = csv.DictReader(file)
+            expenses = list(reader)
+    except FileNotFoundError:
+        pass
+    return expenses
+
+
 def save_expense(expense: Dict[str, str]):
     """
     Saves a single expense entry to the CSV file.
@@ -45,13 +62,9 @@ def get_next_expense_id() -> int:
         int: The next available ID, incremented from the highest ID found in the file. 
              If the file is empty or doesn't exist, returns 1.
     """
-    try:
-        with CSV_FILE_PATH.open("r", newline="") as file:
-            reader = csv.DictReader(file)
-            ids = [int(row["ID"]) for row in reader if row["ID"].isdigit()]
-            return max(ids, default=0) + 1
-    except FileNotFoundError:
-        return 1
+    expenses = read_expenses()
+    ids = [int(row["ID"]) for row in expenses if row["ID"].isdigit()]
+    return max(ids, default=0) + 1
 
 
 def filter_expenses(reader, target_year, target_month=None, target_category=None):

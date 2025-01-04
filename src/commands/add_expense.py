@@ -1,7 +1,7 @@
 import click
 from datetime import datetime
 from styles.colors import console
-from utils.budget import check_budget_warning
+from src.utils.budget_helpers import check_budget_warning
 from utils.data_manager import initialize_csv, save_expense, get_next_expense_id
 from utils.validators import validate_parse_date, validate_amount, validate_category, validate_description
 
