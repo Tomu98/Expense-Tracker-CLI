@@ -7,7 +7,7 @@ from utils.validators import validate_date, validate_amount, validate_category, 
 
 
 @click.command()
-@click.option("--date", type=str, default=None, help="Date of the expense (optional).")
+@click.option("--date", type=str, default=None, help="Date of the expense. It's optional and defaults to today's date.")
 @click.option("--amount", type=float, prompt="Amount", help="Amount of the expense.")
 @click.option("--category", type=str, prompt="Category", help="Category of the expense.")
 @click.option("--description", type=str, default=None, help="Expense description. You can use quotes for multiple words.")

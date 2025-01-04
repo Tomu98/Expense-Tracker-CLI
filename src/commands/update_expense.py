@@ -26,7 +26,7 @@ def update_expense(id, date, amount, category, description):
 
         # Validate that the file exists
         try:
-            with open(CSV_FILE_PATH, "r", newline="") as file:
+            with open(CSV_FILE_PATH, "r", newline="", encoding="utf-8") as file:
                 reader = csv.DictReader(file)
                 expenses = list(reader)
         except FileNotFoundError:
@@ -96,7 +96,7 @@ def update_expense(id, date, amount, category, description):
             return
 
         # Overwrite file with updated data
-        with open(CSV_FILE_PATH, "w", newline="") as file:
+        with open(CSV_FILE_PATH, "w", newline="", encoding="utf-8") as file:
             writer = csv.DictWriter(file, fieldnames=FIELD_NAMES)
             writer.writeheader()
             writer.writerows(expenses)

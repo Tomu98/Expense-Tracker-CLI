@@ -8,7 +8,6 @@ from src.utils.data_manager import initialize_csv, save_expense, get_next_expens
 
 @pytest.fixture
 def sample_expenses():
-    """Retorna datos ficticios en formato CSV para pruebas."""
     csv_data = dedent(
         """\
         Date,Amount,Category,Description
@@ -29,7 +28,7 @@ def test_initialize_csv(mocker):
     initialize_csv()
 
     mock_mkdir.assert_called_once_with(exist_ok=True)
-    mock_open.assert_called_once_with("x", newline="")
+    mock_open.assert_called_once_with("x", newline="", encoding="utf-8")
 
 
 def test_save_expense(mocker):
@@ -47,7 +46,7 @@ def test_save_expense(mocker):
 
     save_expense(expense)
 
-    mock_open.assert_called_once_with("a", newline="")
+    mock_open.assert_called_once_with("a", newline="", encoding="utf-8")
     mock_writer.assert_called_once_with(mock_open(), fieldnames=["ID", "Date", "Amount", "Category", "Description"])
     mock_writer_instance.writerow.assert_called_once_with(expense)
 

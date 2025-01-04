@@ -19,7 +19,7 @@ def initialize_csv():
     """
     try:
         CSV_FILE_PATH.parent.mkdir(exist_ok=True)
-        with CSV_FILE_PATH.open("x", newline="") as file:
+        with CSV_FILE_PATH.open("x", newline="", encoding="utf-8") as file:
             writer = csv.DictWriter(file, fieldnames=FIELD_NAMES)
             writer.writeheader()
     except FileExistsError:
@@ -33,7 +33,7 @@ def save_expense(expense: Dict[str, str]):
     Args:
         expense (Dict[str, str]): A dictionary representing the expense with keys corresponding to FIELD_NAMES.
     """
-    with CSV_FILE_PATH.open("a", newline="") as file:
+    with CSV_FILE_PATH.open("a", newline="", encoding="utf-8") as file:
         writer = csv.DictWriter(file, fieldnames=FIELD_NAMES)
         writer.writerow(expense)
 

@@ -4,7 +4,7 @@ from click import BadParameter
 from src.utils.validators import *
 
 
-# Tests para validate_date
+# Tests for validate_date
 def test_validate_date_valid():
     today = datetime.now().strftime("%Y-%m-%d")
     assert validate_date(today) == today
@@ -21,7 +21,7 @@ def test_validate_date_future():
         validate_date(future_date)
 
 
-# Tests para validate_amount
+# Tests for validate_amount
 def test_validate_amount_valid():
     assert validate_amount(5000.75) == 5000.75
 
@@ -44,7 +44,7 @@ def test_validate_amount_insignificant():
         validate_amount(0.004)
 
 
-# Tests para validate_category
+# Tests for validate_category
 def test_validate_category_valid():
     assert validate_category("groceries") == "Groceries"
 
