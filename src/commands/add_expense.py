@@ -1,13 +1,13 @@
 import click
 from datetime import datetime
 from styles.colors import console
-from utils.budget import check_budget_warning
+from src.utils.budget_helpers import check_budget_warning
 from utils.data_manager import initialize_csv, save_expense, get_next_expense_id
-from utils.validators import validate_date, validate_amount, validate_category, validate_description
+from utils.validators import validate_parse_date, validate_amount, validate_category, validate_description
 
 
 @click.command()
-@click.option("--date", type=str, default=None, help="Date of the expense (optional).")
+@click.option("--date", type=str, default=None, help="Date of the expense. It's optional and defaults to today's date.")
 @click.option("--amount", type=float, prompt="Amount", help="Amount of the expense.")
 @click.option("--category", type=str, prompt="Category", help="Category of the expense.")
 @click.option("--description", type=str, default=None, help="Expense description. You can use quotes for multiple words.")
@@ -23,7 +23,7 @@ def add_expense(date, amount, category, description):
     category = validate_category(category)
     description = validate_description(description)
     if date:
-        expense_date = validate_date(date)
+        expense_date = validate_parse_date(date)
     else:
         expense_date = datetime.now().strftime("%Y-%m-%d")
 

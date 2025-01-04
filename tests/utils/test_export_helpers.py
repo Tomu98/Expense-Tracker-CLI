@@ -5,6 +5,7 @@ from openpyxl import load_workbook
 from src.utils.export_helpers import *
 
 
+
 @pytest.fixture
 def sample_expenses():
     return [
@@ -15,6 +16,7 @@ def sample_expenses():
 @pytest.fixture
 def sample_budget_info():
     return {"budget_amount": 1000.0, "current_expenses": 70.0, "remaining_budget": 930.0}
+
 
 
 def test_write_csv(tmp_path, sample_expenses, sample_budget_info):
@@ -72,6 +74,7 @@ def test_write_excel(tmp_path, sample_expenses, sample_budget_info):
     assert ws.cell(row=6, column=2).value == "$1000.00"
 
 
+
 def test_generate_unique_filename(tmp_path):
     existing_file = tmp_path / "file.json"
     existing_file.touch()
@@ -82,6 +85,7 @@ def test_generate_unique_filename(tmp_path):
     unique_file.touch()
     next_unique_file = generate_unique_filename(existing_file)
     assert next_unique_file.name == "file(2).json"
+
 
 
 def test_filter_expenses(sample_expenses):

@@ -1,10 +1,9 @@
-import csv
 import json
 import click
 from pathlib import Path
 from datetime import datetime
 from styles.colors import console
-from utils.data_manager import CSV_FILE_PATH
+from utils.data_manager import read_expenses
 
 
 BUDGET_FILE_PATH = Path("data/budgets.json")
@@ -93,20 +92,16 @@ def calculate_monthly_expenses(year: int, month: int) -> float:
         float: The total amount of expenses for the specified month and year.
     """
     total_expenses = 0.0
-
-    try:
-        with CSV_FILE_PATH.open("r", newline="", encoding="utf-8") as file:
-            reader = csv.DictReader(file)
-            for row in reader:
-                try:
-                    expense_date = datetime.strptime(row["Date"], "%Y-%m-%d")
-                    if expense_date.year == year and expense_date.month == month:
-                        total_expenses += float(row["Amount"])
-                except ValueError:
-                    continue
-    except FileNotFoundError:
-        total_expenses = 0.0
-
+    expenses = read_expenses()
+    
+    for expense in expenses:
+        try:
+            expense_date = datetime.strptime(expense["Date"], "%Y-%m-%d")
+            if expense_date.year == year and expense_date.month == month:
+                total_expenses += float(expense["Amount"])
+        except ValueError:
+            continue
+            
     return total_expenses
 
 

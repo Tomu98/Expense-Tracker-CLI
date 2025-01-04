@@ -1,10 +1,9 @@
 import click
-import csv
 from datetime import datetime
 from styles.colors import console
-from utils.budget import read_budget, calculate_monthly_expenses
-from utils.data_manager import CSV_FILE_PATH, parse_date, filter_expenses
-from utils.validators import validate_category
+from src.utils.budget_helpers import read_budget, calculate_monthly_expenses
+from utils.data_manager import read_expenses, filter_expenses
+from utils.validators import validate_parse_date, validate_category
 
 
 @click.command()
@@ -17,7 +16,7 @@ def summary(date, category):
     """
     try:
         # Parse and validate the date
-        year, month = parse_date(date) if date else (None, None)
+        year, month, _ = validate_parse_date(date) if date else (None, None)
 
         # Validate the category, if provided
         target_category = category.capitalize() if category else None
@@ -25,11 +24,10 @@ def summary(date, category):
             validate_category(target_category)
 
         # Read and process CSV file
-        with open(CSV_FILE_PATH, "r", newline="", encoding="utf-8") as file:
-            reader = csv.DictReader(file)
-            total_expense, filtered_expense, category_summary = filter_expenses(
-                reader, year, month, target_category
-            )
+        expenses = read_expenses()
+        total_expense, filtered_expense, category_summary = filter_expenses(
+            expenses, year, month, target_category
+        )
 
         # Read the budget for the target month and year
         budgets = read_budget()

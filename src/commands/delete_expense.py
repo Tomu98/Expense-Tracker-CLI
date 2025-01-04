@@ -1,7 +1,7 @@
 import click
 import csv
 from styles.colors import console
-from utils.data_manager import CSV_FILE_PATH, FIELD_NAMES
+from utils.data_manager import CSV_FILE_PATH, FIELD_NAMES, read_expenses
 
 
 @click.command()
@@ -12,10 +12,7 @@ def delete_expense(id, all):
     Delete a specific expense by ID or clear all expenses after user confirmation.
     """
     try:
-        with open(CSV_FILE_PATH, "r", newline="") as file:
-            reader = csv.DictReader(file)
-            expenses = list(reader)
-
+        expenses = read_expenses()
         if not expenses:
             console.print("\n[warning]No expenses found. Nothing to delete.[/warning]\n")
             return
@@ -30,7 +27,7 @@ def delete_expense(id, all):
 
                 if confirmation in ["y", "yes"]:
                     try:
-                        with open(CSV_FILE_PATH, "w", newline="") as file:
+                        with open(CSV_FILE_PATH, "w", newline="", encoding="utf-8") as file:
                             writer = csv.DictWriter(file, fieldnames=FIELD_NAMES)
                             writer.writeheader()
                         console.print("\n[success]All expenses have been deleted successfully.[/success]\n")
@@ -52,7 +49,7 @@ def delete_expense(id, all):
             console.print(f"\n[error]No expense found with ID [id]{id}[/id].[/error]\n")
             return
 
-        with open(CSV_FILE_PATH, "w", newline="") as file:
+        with open(CSV_FILE_PATH, "w", newline="", encoding="utf-8") as file:
             writer = csv.DictWriter(file, fieldnames=FIELD_NAMES)
             writer.writeheader()
             writer.writerows(updated_expenses)

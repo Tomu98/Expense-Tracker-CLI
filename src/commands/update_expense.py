@@ -1,9 +1,9 @@
 import click
 import csv
 from styles.colors import console
-from utils.budget import check_budget_warning
-from utils.data_manager import CSV_FILE_PATH, FIELD_NAMES
-from utils.validators import validate_date, validate_amount, validate_category, validate_description
+from src.utils.budget_helpers import check_budget_warning
+from utils.data_manager import CSV_FILE_PATH, FIELD_NAMES, read_expenses
+from utils.validators import validate_parse_date, validate_amount, validate_category, validate_description
 
 
 @click.command()
@@ -25,11 +25,8 @@ def update_expense(id, date, amount, category, description):
             raise click.UsageError("You must provide at least one field to update (e.g., --date).")
 
         # Validate that the file exists
-        try:
-            with open(CSV_FILE_PATH, "r", newline="") as file:
-                reader = csv.DictReader(file)
-                expenses = list(reader)
-        except FileNotFoundError:
+        expenses = read_expenses()
+        if not expenses:
             console.print("[error]Error:[/error] Expense file not found.")
             return
 
@@ -48,7 +45,7 @@ def update_expense(id, date, amount, category, description):
                 original_amount = expense["Amount"]
 
                 if date:
-                    validated_date = validate_date(date)
+                    validated_date = validate_parse_date(date)
                     if original_date != validated_date:
                         update_summary.append(f"[white]- New Date: [white_dim]{original_date}[/white_dim] ---> [date]{validated_date}[/date][/white]")
                     else:
@@ -96,7 +93,7 @@ def update_expense(id, date, amount, category, description):
             return
 
         # Overwrite file with updated data
-        with open(CSV_FILE_PATH, "w", newline="") as file:
+        with open(CSV_FILE_PATH, "w", newline="", encoding="utf-8") as file:
             writer = csv.DictWriter(file, fieldnames=FIELD_NAMES)
             writer.writeheader()
             writer.writerows(expenses)

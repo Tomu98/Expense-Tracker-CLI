@@ -1,11 +1,10 @@
 import click
-import csv
 from pathlib import Path
 from styles.colors import console
-from utils.budget import get_budget_summary
-from utils.data_manager import CSV_FILE_PATH, parse_date
+from src.utils.budget_helpers import get_budget_summary
+from utils.data_manager import read_expenses
 from utils.export_helpers import write_csv, write_json, write_excel, generate_unique_filename, filter_expenses
-from utils.validators import validate_category
+from utils.validators import validate_parse_date, validate_category
 
 
 @click.command()
@@ -42,10 +41,7 @@ def export(output, date, category, include_budget):
         month = None
 
         if date:
-            try:
-                year, month = parse_date(date)
-            except ValueError:
-                raise click.BadParameter("Invalid date format. Use 'YYYY' or 'YYYY-MM' and ensure it's a valid date.", param_hint="'--date'")
+            year, month, _ = validate_parse_date(date)
 
         if category:
             category = validate_category(category)
@@ -55,20 +51,7 @@ def export(output, date, category, include_budget):
             raise click.UsageError("--include-budget requires --date with both year and month specified.")
 
         # Read the source CSV file
-        with open(CSV_FILE_PATH, "r", newline="", encoding="utf-8") as file:
-            reader = csv.DictReader(file)
-
-            # Convert rows to list of dictionaries
-            expenses = [
-                {
-                    "ID": row["ID"],
-                    "Date": row["Date"],
-                    "Amount": row["Amount"],
-                    "Category": row["Category"],
-                    "Description": row["Description"]
-                }
-                for row in reader
-            ]
+        expenses = read_expenses()
 
         # Filter expenses
         filtered_expenses = filter_expenses(

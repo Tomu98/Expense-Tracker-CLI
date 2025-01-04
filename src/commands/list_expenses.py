@@ -1,9 +1,8 @@
 import click
-import csv
 from rich.table import Table
 from styles.colors import console
-from utils.data_manager import CSV_FILE_PATH
-from utils.validators import validate_date, validate_amount, validate_category
+from utils.data_manager import read_expenses
+from utils.validators import validate_parse_date, validate_amount, validate_category
 
 
 @click.command()
@@ -18,14 +17,12 @@ def list_expenses(category, start_date, end_date, min_amount, max_amount):
     and amount range, displaying results in a formatted table.
     """
     try:
-        with open(CSV_FILE_PATH, "r", newline="") as file:
-            reader = csv.DictReader(file)
-            expenses = [row for row in reader]
+        expenses = read_expenses()
     except FileNotFoundError:
-        console.print("[error]Error:[/error] No expenses file was found.")
+        console.print("[error]Error:[/error] [white]No expenses file was found.[/white]")
         return
     except Exception as e:
-        console.print(f"[error]Error reading file:[/error] {e}")
+        console.print(f"[error]Error reading file:[/error] [white]{e}[/white]")
         return
 
     if not expenses:
@@ -39,11 +36,11 @@ def list_expenses(category, start_date, end_date, min_amount, max_amount):
             expenses = [expense for expense in expenses if expense["Category"].capitalize() == category]
 
         if start_date:
-            validate_date(start_date)
+            validate_parse_date(start_date)
             expenses = [expense for expense in expenses if expense["Date"] >= start_date]
 
         if end_date:
-            validate_date(end_date)
+            validate_parse_date(end_date)
             expenses = [expense for expense in expenses if expense["Date"] <= end_date]
 
         if min_amount is not None:
