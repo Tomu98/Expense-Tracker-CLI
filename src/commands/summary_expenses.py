@@ -3,8 +3,8 @@ import csv
 from datetime import datetime
 from styles.colors import console
 from utils.budget import read_budget, calculate_monthly_expenses
-from utils.data_manager import CSV_FILE_PATH, parse_date, filter_expenses
-from utils.validators import validate_category
+from utils.data_manager import CSV_FILE_PATH, filter_expenses
+from utils.validators import validate_parse_date, validate_category
 
 
 @click.command()
@@ -17,7 +17,7 @@ def summary(date, category):
     """
     try:
         # Parse and validate the date
-        year, month = parse_date(date) if date else (None, None)
+        year, month, _ = validate_parse_date(date) if date else (None, None)
 
         # Validate the category, if provided
         target_category = category.capitalize() if category else None

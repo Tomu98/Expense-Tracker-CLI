@@ -2,25 +2,32 @@ import click
 from datetime import datetime
 
 
-def validate_date(date: str):
+def validate_parse_date(date_str: str, allow_future: bool = False):
     """
-    Validates the date format (YYYY-MM-DD) and ensures it's not in the future.
+    Parse and validate a date string in the format 'YYYY', 'YYYY-MM', or 'YYYY-MM-DD'.
+    Ensures the date isn't in the future if in 'YYYY-MM-DD' format unless allow_future is True.
+    Returns the corresponding year, month, and day.
     """
     try:
-        parsed_date = datetime.strptime(date, "%Y-%m-%d")
-        today = datetime.now().date()
-
-        if parsed_date.date() > today:
-            raise click.BadParameter(
-                "Please enter a valid past or current date.",
-                param_hint="'--date'"
-            )
-
-        return date
-
+        if len(date_str) == 4:
+            return int(date_str), None, None
+        elif len(date_str) == 7:
+            parsed_date = datetime.strptime(date_str, "%Y-%m")
+            return parsed_date.year, parsed_date.month, None
+        elif len(date_str) == 10:
+            parsed_date = datetime.strptime(date_str, "%Y-%m-%d")
+            today = datetime.now().date()
+            if not allow_future and parsed_date.date() > today:
+                raise click.BadParameter(
+                    "Please enter a valid past or current date.",
+                    param_hint="'--date'"
+                )
+            return parsed_date.year, parsed_date.month, parsed_date.day
+        else:
+            raise ValueError
     except ValueError:
         raise click.BadParameter(
-            f"Invalid date format or values in '{date}'. Use YYYY-MM-DD and ensure the values are valid.",
+            f"Invalid date format. Use 'YYYY', 'YYYY-MM', or 'YYYY-MM-DD' and ensure it's a valid date.",
             param_hint="'--date'"
         )
 

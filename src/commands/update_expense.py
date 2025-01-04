@@ -3,7 +3,7 @@ import csv
 from styles.colors import console
 from utils.budget import check_budget_warning
 from utils.data_manager import CSV_FILE_PATH, FIELD_NAMES
-from utils.validators import validate_date, validate_amount, validate_category, validate_description
+from utils.validators import validate_parse_date, validate_amount, validate_category, validate_description
 
 
 @click.command()
@@ -48,7 +48,7 @@ def update_expense(id, date, amount, category, description):
                 original_amount = expense["Amount"]
 
                 if date:
-                    validated_date = validate_date(date)
+                    validated_date = validate_parse_date(date)
                     if original_date != validated_date:
                         update_summary.append(f"[white]- New Date: [white_dim]{original_date}[/white_dim] ---> [date]{validated_date}[/date][/white]")
                     else:

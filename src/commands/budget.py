@@ -3,8 +3,7 @@ from datetime import datetime
 from rich.table import Table
 from styles.colors import console
 from utils.budget import initialize_budget_file, read_budget, save_budget, update_budget, calculate_monthly_expenses
-from utils.data_manager import parse_date
-from utils.validators import validate_budget_amount
+from utils.validators import validate_parse_date, validate_budget_amount
 
 
 # Set budget
@@ -20,12 +19,7 @@ def set_budget(amount, date):
 
     validate_budget_amount(amount)
 
-    try:
-        parsed_date = datetime.strptime(date, "%Y-%m")
-        year = parsed_date.year
-        month = parsed_date.month
-    except ValueError:
-        raise click.BadParameter("The date must be in 'YYYY-MM' format and must be a valid date.", param_hint="'--date'")
+    year, month, _ = validate_parse_date(date, allow_future=True)
 
     # Validate the year
     current_year = datetime.now().year
@@ -48,7 +42,7 @@ def delete_budget(date):
     """
     initialize_budget_file()
 
-    year, month = parse_date(date)
+    year, month, _ = validate_parse_date(date)
 
     if month is None:
         raise click.BadParameter("The date must include both year and month (e.g., '2025-01').", param_hint="'--date'")
@@ -87,7 +81,7 @@ def budget(current, all, date):
 
     # Validate and parse date
     if date:
-        year, month = parse_date(date)
+        year, month, _ = validate_parse_date(date)
 
         if month is None:
             # Show budgets for the entire year
@@ -97,13 +91,13 @@ def budget(current, all, date):
             table.add_column("Current Expenses", justify="center", style="amount", min_width=15)
             table.add_column("Difference", justify="center", min_width=15)
 
-            budgets_found = False  # Track if any budget is found for the year
+            budgets_found = False
 
             for key, budget_amount in budgets.items():
                 budget_year, budget_month = map(int, key.split("-"))
 
                 if budget_year == year:
-                    budgets_found = True  # A budget exists for this year
+                    budgets_found = True
                     current_expenses = calculate_monthly_expenses(budget_year, budget_month)
                     difference = budget_amount - current_expenses
                     difference_color = "budget2" if difference >= 0 else "amount2"

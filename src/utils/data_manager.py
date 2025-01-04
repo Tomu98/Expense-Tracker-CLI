@@ -1,4 +1,3 @@
-import click
 import csv
 from datetime import datetime
 from typing import Dict
@@ -53,23 +52,6 @@ def get_next_expense_id() -> int:
             return max(ids, default=0) + 1
     except FileNotFoundError:
         return 1
-
-
-def parse_date(date_str):
-    """
-    Parse a date string in the format 'YYYY' or 'YYYY-MM' and return the corresponding year and month.
-    If only 'YYYY' is provided, the month defaults to None.
-    """
-    try:
-        if len(date_str) == 4:
-            return int(date_str), None
-        elif len(date_str) == 7:
-            parsed_date = datetime.strptime(date_str, "%Y-%m")
-            return parsed_date.year, parsed_date.month
-        else:
-            raise ValueError
-    except ValueError:
-        raise click.BadParameter("Invalid date format. Use 'YYYY' or 'YYYY-MM' and ensure it's a valid date.", param_hint="'--date'")
 
 
 def filter_expenses(reader, target_year, target_month=None, target_category=None):

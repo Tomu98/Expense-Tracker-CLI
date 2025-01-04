@@ -4,32 +4,43 @@ from click import BadParameter
 from src.utils.validators import *
 
 
-# Tests for validate_date
-def test_validate_date_valid():
-    today = datetime.now().strftime("%Y-%m-%d")
-    assert validate_date(today) == today
+
+# ------------------------------------------
+# Tests for validate_parse_date
+# ------------------------------------------
+def test_validate_parse_date_valid():
+    assert validate_parse_date("2025") == (2025, None, None)
+    assert validate_parse_date("2025-01") == (2025, 1, None)
+    assert validate_parse_date("2025-01-01") == (2025, 1, 1)
 
 
-def test_validate_date_invalid_format():
-    with pytest.raises(BadParameter, match="Invalid date format or values in"):
-        validate_date("2024-31-12")
+def test_validate_parse_date_invalid_format():
+    with pytest.raises(BadParameter, match="Invalid date format.*"):
+        validate_parse_date("2025-33")
 
 
 def test_validate_date_future():
     future_date = (datetime.now().date().replace(year=datetime.now().year + 1)).strftime("%Y-%m-%d")
     with pytest.raises(BadParameter, match="Please enter a valid past or current date."):
-        validate_date(future_date)
+        validate_parse_date(future_date, allow_future=False)
 
 
+def test_validate_parse_date_allow_future():
+    future_date = (datetime.now().date().replace(year=datetime.now().year + 1)).strftime("%Y-%m-%d")
+    assert validate_parse_date(future_date, allow_future=True) == (datetime.now().year + 1, datetime.now().month, datetime.now().day)
+
+
+
+# ------------------------------------------
 # Tests for validate_amount
+# ------------------------------------------
 def test_validate_amount_valid():
-    assert validate_amount(5000.75) == 5000.75
+    assert validate_amount(2023.02) == 2023.02
 
 
 def test_validate_amount_zero_or_negative():
     with pytest.raises(BadParameter, match="Amount must be positive"):
         validate_amount(0)
-
     with pytest.raises(BadParameter, match="Amount must be positive"):
         validate_amount(-50)
 
@@ -44,7 +55,10 @@ def test_validate_amount_insignificant():
         validate_amount(0.004)
 
 
+
+# ------------------------------------------
 # Tests for validate_category
+# ------------------------------------------
 def test_validate_category_valid():
     assert validate_category("groceries") == "Groceries"
 
@@ -54,9 +68,12 @@ def test_validate_category_invalid():
         validate_category("InvalidCategory")
 
 
+
+# ------------------------------------------
 # Tests for validate_description
+# ------------------------------------------
 def test_validate_description_valid():
-    assert validate_description("Groceries expense") == "Groceries expense"
+    assert validate_description("This is a description") == "This is a description"
 
 
 def test_validate_description_too_short():
@@ -73,17 +90,19 @@ def test_validate_description_empty():
     assert validate_description("") == "..."
 
 
+
+# ------------------------------------------
 # Tests for validate_budget_amount
+# ------------------------------------------
 def test_validate_budget_amount_valid():
-    assert validate_budget_amount(5000) == 5000
+    assert validate_budget_amount(10000) == 10000
 
 
 def test_validate_budget_amount_zero_or_negative():
     with pytest.raises(BadParameter, match="greater than \\$0 and less than"):
         validate_budget_amount(0)
-
     with pytest.raises(BadParameter, match="greater than \\$0 and less than"):
-        validate_budget_amount(-500)
+        validate_budget_amount(-1000)
 
 
 def test_validate_budget_amount_exceeds_max():
