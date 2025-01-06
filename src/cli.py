@@ -9,7 +9,7 @@ from commands.budget import set_budget, delete_budget, budget
 
 
 @click.group()
-@click.version_option(version="0.16.22", prog_name="Expense Tracker CLI")
+@click.version_option(version="0.16.23", prog_name="Expense Tracker CLI")
 def cli():
     pass
 
@@ -35,4 +35,4 @@ if __name__ == '__main__':
 # y que tengan sus mensajes con sus estilos como en algunos comandos como summary
 
 # Revisar todos los comandos de nuevo ya que cambié:
-# export, list, summary
+# export

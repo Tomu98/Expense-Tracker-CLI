@@ -27,7 +27,7 @@ def update_expense(id, date, amount, category, description):
         # Validate that the file exists
         expenses = read_expenses()
         if not expenses:
-            console.print("[error]Error:[/error] Expense file not found.")
+            console.print("\n[error]Error:[/error] Expense file not found.\n")
             return
 
         # Find the ID and update if it exists
@@ -90,7 +90,7 @@ def update_expense(id, date, amount, category, description):
                 break
 
         if not expense_found:
-            console.print(f"[error]Error:[/error] No expense found with ID [id]{id}[/id].")
+            console.print(f"\n[error]Error:[/error] No expense found with ID [id]{id}[/id].\n")
             return
 
         # Overwrite file with updated data
@@ -113,8 +113,8 @@ def update_expense(id, date, amount, category, description):
             console.print(budget_warning_message)
 
     except click.BadParameter as e:
-        console.print(f"[error]Validation error:[/error] [white]{e}[/white]")
+        console.print(f"\n[error]Validation error:[/error] [white]{e}[/white]\n")
     except click.UsageError as e:
-        console.print(f"[error]Usage error:[/error] [white]{e}[/white]")
+        console.print(f"\n[error]Usage error:[/error] [white]{e}[/white]\n")
     except Exception as e:
-        console.print(f"[error]Error updating expense:[/error] [white]{e}[/white]")
+        console.print(f"\n[error]Error updating expense:[/error] [white]{e}[/white]\n")

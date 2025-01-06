@@ -1,7 +1,7 @@
 import click
 from datetime import datetime
 from styles.colors import console
-from src.utils.budget_helpers import read_budget, calculate_monthly_expenses
+from utils.budget_helpers import read_budget, calculate_monthly_expenses
 from utils.data_manager import read_expenses, filter_expenses
 from utils.validators import validate_parse_date, validate_category
 
@@ -16,7 +16,7 @@ def summary(date, category):
     """
     try:
         # Parse and validate the date
-        year, month, _ = validate_parse_date(date) if date else (None, None)
+        year, month, _ = validate_parse_date(date) if date else (None, None, None)
 
         # Validate the category, if provided
         target_category = category.capitalize() if category else None
@@ -37,7 +37,7 @@ def summary(date, category):
         # Show results
         if year or month or target_category:
             if filtered_expense == 0.00:
-                console.print("[warning]No expenses found for the specified filters.[/warning]")
+                console.print("\n[warning]No expenses found for the specified filters.[/warning]\n")
                 return
 
             # Show total expenses
@@ -51,30 +51,33 @@ def summary(date, category):
                 filter_desc.append(f"category '{target_category}'")
 
             filter_text = " and ".join(filter_desc)
-            console.print(f"\n[white]Total expenses for {filter_text}: [amount]${filtered_expense:.2f}[/amount][/white]")
+            console.print(f"\n[white]Total expenses for {filter_text}: [amount]${filtered_expense:.2f}[/amount][/white]\n")
 
             # Show budget information
             if budget_amount is not None:
                 current_expenses = calculate_monthly_expenses(year, month)
                 remaining_budget = budget_amount - current_expenses
-                console.print(f"\n[white]Budget for {month_name} {year}: [budget]${budget_amount:.2f}[/budget][/white]")
+                console.print(f"[white]Budget for {month_name} {year}: [budget]${budget_amount:.2f}[/budget][/white]")
                 if remaining_budget < 0:
                     console.print(f"[white]You've exceeded your budget by [amount2]${abs(remaining_budget):.2f}[/amount2][/white]")
                 else:
-                    console.print(f"[white]Remaining budget: [budget2]${remaining_budget:.2f}[/budget2][/white]")
+                    console.print(f"[white]Remaining budget: [budget2]${remaining_budget:.2f}[/budget2][/white]\n")
 
             # Show breakdown only if no category is specified
             if not target_category:
-                console.print("\n[white]Breakdown by category:[/white]")
+                console.print("[white]Breakdown by category:[/white]")
                 for cat, amount in category_summary.items():
                     console.print(f"- [category2]{cat}:[/category2] [amount]${amount:.2f}[/amount]")
 
         else:
             console.print(f"\n[white]Total expenses:[/white] [amount]${total_expense:.2f}[/amount]\n")
+            console.print("[white]Breakdown by category:[/white]")
+            for cat, amount in category_summary.items():
+                console.print(f"- [category2]{cat}:[/category2] [amount]${amount:.2f}[/amount]")
 
     except FileNotFoundError:
-        console.print("[error]Error:[/error] No expenses file was found.")
+        console.print("\n[error]Error:[/error] [white]No expenses file was found.[/white]\n")
     except PermissionError:
-        console.print("[error]Error:[/error] Permission denied to read the expenses file.")
+        console.print("\n[error]Error:[/error] [white]Permission denied to read the expenses file.[/white]\n")
     except Exception as e:
-        console.print(f"[error]Unexpected error:[/error] [white]{e}[/white]")
+        console.print(f"\n[error]Unexpected error:[/error] [white]{e}[/white]\n")

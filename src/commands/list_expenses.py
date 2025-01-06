@@ -6,62 +6,69 @@ from utils.validators import validate_parse_date, validate_amount, validate_cate
 
 
 @click.command()
-@click.option("--category", type=str, help="Filter expenses by category.")
-@click.option("--start-date", help="Filter expenses from a specific start date (YYYY-MM-DD).")
-@click.option("--end-date", help="Filter expenses up to a specific end date (YYYY-MM-DD).")
-@click.option("--min-amount", type=float, help="Filter expenses with a minimum amount.")
-@click.option("--max-amount", type=float, help="Filter expenses with a maximum amount.")
+@click.option("--category", type=str, help="Filter by expense category")
+@click.option("--from", "start_date", help="Filter expenses from this date onwards (YYYY-MM-DD). Combine with --to for a date range.")
+@click.option("--to", "end_date", help="Filter expenses up to this date (YYYY-MM-DD). Combine with --from for a date range.")
+@click.option("--min", "min_amount", type=float, help="Show expenses above or equal to this amount")
+@click.option("--max", "max_amount", type=float, help="Show expenses below or equal to this amount")
 def list_expenses(category, start_date, end_date, min_amount, max_amount):
     """
-    Lists and filters. Users can filter by category, date range,
-    and amount range, displaying results in a formatted table.
+    List and filter expenses.
+
+    Displays expenses in a formatted table with optional filters:
+    - Category filter shows only expenses in the specified category
+    - Date filters show expenses within the given range
+    - Amount filters show expenses within the specified range
+
+    All filters can be combined. When no filters are applied, shows all expenses.
     """
     try:
         expenses = read_expenses()
     except FileNotFoundError:
-        console.print("[error]Error:[/error] [white]No expenses file was found.[/white]")
-        return
-    except Exception as e:
-        console.print(f"[error]Error reading file:[/error] [white]{e}[/white]")
+        console.print("\n[error]Error:[/error] [white]No expenses file was found.[/white]\n")
         return
 
     if not expenses:
-        console.print("[warning]No expenses recorded.[/warning]")
+        console.print("\n[warning]No expenses recorded.[/warning]\n")
         return
 
     # Filters
-    try:
-        if category:
-            category = validate_category(category)
-            expenses = [expense for expense in expenses if expense["Category"].capitalize() == category]
+    if category:
+        category = validate_category(category)
+        expenses = [expense for expense in expenses if expense["Category"] == category]
 
-        if start_date:
-            validate_parse_date(start_date)
-            expenses = [expense for expense in expenses if expense["Date"] >= start_date]
+    if start_date and end_date:
+        validate_parse_date(start_date, force_full_date=True)
+        validate_parse_date(end_date, force_full_date=True)
 
-        if end_date:
-            validate_parse_date(end_date)
-            expenses = [expense for expense in expenses if expense["Date"] <= end_date]
+        if start_date > end_date:
+            start_date, end_date = end_date, start_date
 
-        if min_amount is not None:
-            min_amount = validate_amount(min_amount)
-            expenses = [expense for expense in expenses if float(expense["Amount"]) >= min_amount]
+        expenses = [expense for expense in expenses if start_date <= expense["Date"] <= end_date]
 
-        if max_amount is not None:
-            max_amount = validate_amount(max_amount)
-            expenses = [expense for expense in expenses if float(expense["Amount"]) <= max_amount]
+    if start_date and not end_date:
+        validate_parse_date(start_date, force_full_date=True)
+        expenses = [expense for expense in expenses if expense["Date"] >= start_date]
 
-    except click.BadParameter as e:
-        console.print(f"[error]{e.message}[/error]")
-        return
+    if end_date and not start_date:
+        validate_parse_date(end_date, force_full_date=True)
+        expenses = [expense for expense in expenses if expense["Date"] <= end_date]
+
+    if min_amount is not None:
+        min_amount = validate_amount(min_amount)
+        expenses = [expense for expense in expenses if float(expense["Amount"]) >= min_amount]
+
+    if max_amount is not None:
+        max_amount = validate_amount(max_amount)
+        expenses = [expense for expense in expenses if float(expense["Amount"]) <= max_amount]
 
     if not expenses:
-        console.print("[warning]No expenses matched the given filters.[/warning]")
+        console.print("\n[warning]No expenses matched the given filters.[/warning]\n")
         return
 
     # Create table
     table = Table(
-        title="\nFiltered Expenses" if category or start_date or end_date or min_amount or max_amount 
+        title="\nFiltered Expenses" if any([category, start_date, end_date, min_amount, max_amount]) 
         else "\nExpenses",
         row_styles=["none", "dim"],
     )
