@@ -1,7 +1,7 @@
 import click
 import csv
 from styles.colors import console
-from src.utils.budget_helpers import check_budget_warning
+from utils.budget_helpers import check_budget_warning
 from utils.data_manager import CSV_FILE_PATH, FIELD_NAMES, read_expenses
 from utils.validators import validate_parse_date, validate_amount, validate_category, validate_description
 
@@ -27,7 +27,7 @@ def update_expense(id, date, amount, category, description):
         # Validate that the file exists
         expenses = read_expenses()
         if not expenses:
-            console.print("[error]Error:[/error] Expense file not found.")
+            console.print("\n[error]Error:[/error] Expense file not found.\n")
             return
 
         # Find the ID and update if it exists
@@ -45,7 +45,8 @@ def update_expense(id, date, amount, category, description):
                 original_amount = expense["Amount"]
 
                 if date:
-                    validated_date = validate_parse_date(date)
+                    year, month, day = validate_parse_date(date, force_full_date=True)
+                    validated_date = f"{year:04d}-{month:02d}-{day:02d}"
                     if original_date != validated_date:
                         update_summary.append(f"[white]- New Date: [white_dim]{original_date}[/white_dim] ---> [date]{validated_date}[/date][/white]")
                     else:
@@ -89,7 +90,7 @@ def update_expense(id, date, amount, category, description):
                 break
 
         if not expense_found:
-            console.print(f"[error]Error:[/error] No expense found with ID [id]{id}[/id].")
+            console.print(f"\n[error]Error:[/error] No expense found with ID [id]{id}[/id].\n")
             return
 
         # Overwrite file with updated data
@@ -104,7 +105,7 @@ def update_expense(id, date, amount, category, description):
             console.print(change)
 
         # Check if the updated expense affects the monthly budget
-        expense_year, expense_month = map(int, updated_date.split("-")[:2])
+        expense_year, expense_month, _ = map(int, updated_date.split("-"))
 
         # Budget message
         budget_warning_message = check_budget_warning(expense_year, expense_month)
@@ -112,8 +113,8 @@ def update_expense(id, date, amount, category, description):
             console.print(budget_warning_message)
 
     except click.BadParameter as e:
-        console.print(f"[error]Validation error:[/error] {e}")
+        console.print(f"\n[error]Validation error:[/error] [white]{e}[/white]\n")
     except click.UsageError as e:
-        console.print(f"[error]Usage error:[/error] {e}")
+        console.print(f"\n[error]Usage error:[/error] [white]{e}[/white]\n")
     except Exception as e:
-        console.print(f"[error]Error updating expense:[/error] {e}")
+        console.print(f"\n[error]Error updating expense:[/error] [white]{e}[/white]\n")

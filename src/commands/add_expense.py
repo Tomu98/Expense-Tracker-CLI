@@ -1,7 +1,7 @@
 import click
 from datetime import datetime
 from styles.colors import console
-from src.utils.budget_helpers import check_budget_warning
+from utils.budget_helpers import check_budget_warning
 from utils.data_manager import initialize_csv, save_expense, get_next_expense_id
 from utils.validators import validate_parse_date, validate_amount, validate_category, validate_description
 
@@ -19,13 +19,15 @@ def add_expense(date, amount, category, description):
     initialize_csv()
 
     # Validations
+    if date:
+        year, month, day = validate_parse_date(date, force_full_date=True)
+        expense_date = f"{year:04d}-{month:02d}-{day:02d}"
+    else:
+        expense_date = datetime.now().strftime("%Y-%m-%d")
+        year, month, day = map(int, expense_date.split('-'))
     amount = validate_amount(amount)
     category = validate_category(category)
     description = validate_description(description)
-    if date:
-        expense_date = validate_parse_date(date)
-    else:
-        expense_date = datetime.now().strftime("%Y-%m-%d")
 
     # Generate new expense ID and date
     new_id = get_next_expense_id()
@@ -41,9 +43,6 @@ def add_expense(date, amount, category, description):
     save_expense(expense)
 
     # Check if the expense exceeds the budget
-    current_year = datetime.now().year
-    current_month = datetime.now().month
-
     console.print(
     "\n[success]Expense added successfully:[/success]\n"
     f"[white]- ID: [id]{new_id}[/id][/white]\n"
@@ -53,6 +52,6 @@ def add_expense(date, amount, category, description):
     f"[white]- Description: [description]'{description}'[/description][/white]"
     )
 
-    budget_warning_message = check_budget_warning(current_year, current_month)
+    budget_warning_message = check_budget_warning(year, month)
     if budget_warning_message is not None:
         console.print(budget_warning_message)

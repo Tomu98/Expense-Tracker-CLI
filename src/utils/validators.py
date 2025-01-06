@@ -2,20 +2,51 @@ import click
 from datetime import datetime
 
 
-def validate_parse_date(date_str: str, allow_future: bool = False):
+def validate_parse_date(date_str: str, allow_future: bool = False, force_full_date: bool = False):
     """
     Parse and validate a date string in the format 'YYYY', 'YYYY-MM', or 'YYYY-MM-DD'.
-    Ensures the date isn't in the future if in 'YYYY-MM-DD' format unless allow_future is True.
-    Returns the corresponding year, month, and day.
+    Ensures the date isn't in the future unless allow_future is True.
+    If force_full_date is True, only 'YYYY-MM-DD' is accepted.
     """
     try:
+        if force_full_date and len(date_str) != 10:
+            raise click.BadParameter(
+                "Only the full date format 'YYYY-MM-DD' is accepted.",
+                param_hint="'--date'"
+            )
         if len(date_str) == 4:
-            return int(date_str), None, None
+            if force_full_date:
+                raise click.BadParameter(
+                    "Only the full date format 'YYYY-MM-DD' is accepted.",
+                    param_hint="'--date'"
+                )
+            year = int(date_str)
+            if year < 1900 or year > 2100:
+                raise click.BadParameter(
+                    "Year must be between 1900 and 2100.",
+                    param_hint="'--date'"
+                )
+            return year, None, None
         elif len(date_str) == 7:
+            if force_full_date:
+                raise click.BadParameter(
+                    "Only the full date format 'YYYY-MM-DD' is accepted.",
+                    param_hint="'--date'"
+                )
             parsed_date = datetime.strptime(date_str, "%Y-%m")
+            if parsed_date.year < 1900 or parsed_date.year > 2100:
+                raise click.BadParameter(
+                    "Year must be between 1900 and 2100.",
+                    param_hint="'--date'"
+                )
             return parsed_date.year, parsed_date.month, None
         elif len(date_str) == 10:
             parsed_date = datetime.strptime(date_str, "%Y-%m-%d")
+            if parsed_date.year < 1900 or parsed_date.year > 2100:
+                raise click.BadParameter(
+                    "Year must be between 1900 and 2100.",
+                    param_hint="'--date'"
+                )
             today = datetime.now().date()
             if not allow_future and parsed_date.date() > today:
                 raise click.BadParameter(
@@ -27,7 +58,7 @@ def validate_parse_date(date_str: str, allow_future: bool = False):
             raise ValueError
     except ValueError:
         raise click.BadParameter(
-            f"Invalid date format. Use 'YYYY', 'YYYY-MM', or 'YYYY-MM-DD' and ensure it's a valid date.",
+            "Invalid date format. Use 'YYYY-MM-DD' and ensure it's a valid date.",
             param_hint="'--date'"
         )
 
