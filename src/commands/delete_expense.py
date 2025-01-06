@@ -20,7 +20,7 @@ def delete_expense(id, all):
         if all:
             while True:
                 confirmation = click.prompt(
-                    "Are you sure you want to delete all expenses? (y/n)",
+                    "\nAre you sure you want to delete all expenses? (y/n)",
                     type=str,
                     default="n"
                 ).lower()
@@ -32,16 +32,20 @@ def delete_expense(id, all):
                             writer.writeheader()
                         console.print("\n[success]All expenses have been deleted successfully.[/success]\n")
                     except Exception as e:
-                        console.print(f"\n[error]Error when deleting all expenses:[/error] {e}\n")
+                        console.print(f"\n[error]Error when deleting all expenses:[/error] [white]{e}[/white]\n")
                     return
                 elif confirmation in ["n", "no"]:
                     console.print("\n[warning]Deletion cancelled.[/warning]\n")
                     return
                 else:
-                    console.print("\n[warning]Please enter a valid response:[/warning] [success]'y'[/success] or [error]'n'[/error] (or [success]'yes'[/success]/[error]'no'[/error]).\n")
+                    console.print("\n[warning]Please enter a valid response:[/warning] [white][success]'y'/'yes'[/success] or [error]'n'/'no'[/error].[/white]")
 
-        if not id or int(id) <= 0:
-            raise click.BadParameter("You must provide a valid positive ID.", param_hint="'--id'")
+        if id is None:
+            id = click.prompt("Expense ID to eliminate", type=int)
+
+        if id <= 0:
+            console.print("\n[error]You must provide a valid positive ID.[/error]\n")
+            return
 
         updated_expenses = [expense for expense in expenses if int(expense["ID"]) != id]
 
@@ -57,6 +61,4 @@ def delete_expense(id, all):
         console.print(f"\n[success]Expense with ID [id]{id}[/id] has been deleted successfully.[/success]\n")
 
     except FileNotFoundError:
-        console.print("\n[error]Error:[/error] Expense file not found.\n")
-    except Exception as e:
-        console.print(f"\n[error]Error when eliminating expense:[/error] {e}\n")
+        console.print("\n[error]Error:[/error] [white]Expense file not found.[/white]\n")
