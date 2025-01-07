@@ -18,7 +18,6 @@ def add_expense(date, amount, category, description):
     """
     initialize_csv()
 
-    # Validations
     if date:
         year, month, day = validate_parse_date(date, force_full_date=True)
         expense_date = f"{year:04d}-{month:02d}-{day:02d}"
@@ -29,7 +28,6 @@ def add_expense(date, amount, category, description):
     category = validate_category(category)
     description = validate_description(description)
 
-    # Generate new expense ID and date
     new_id = get_next_expense_id()
 
     expense = {
@@ -42,7 +40,6 @@ def add_expense(date, amount, category, description):
 
     save_expense(expense)
 
-    # Check if the expense exceeds the budget
     console.print(
     "\n[success]Expense added successfully:[/success]\n"
     f"[white]- ID: [id]{new_id}[/id][/white]\n"
