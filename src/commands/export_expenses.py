@@ -1,7 +1,7 @@
 import click
 from pathlib import Path
 from styles.colors import console
-from src.utils.budget_helpers import get_budget_summary
+from utils.budget_helpers import get_budget_summary
 from utils.data_manager import read_expenses
 from utils.export_helpers import write_csv, write_json, write_excel, generate_unique_filename, filter_expenses
 from utils.validators import validate_parse_date, validate_category
@@ -84,8 +84,8 @@ def export(output, date, category, include_budget):
         console.print(f"\n[success]Expenses successfully exported to [white_dim]'{output_path}'[/white_dim].[/success]\n")
 
     except FileNotFoundError:
-        console.print("\n[error]Error:[/error] No expenses file was found.\n")
+        console.print("\n[error]Error:[/error] [white]No expenses file was found.[/white]\n")
     except PermissionError:
-        console.print(f"\n[error]Error:[/error] Permission denied to write to [white_dim]'{output_path}'[/white_dim].\n")
+        console.print(f"\n[error]Error:[/error] [white]Permission denied to write to [white_dim]'{output_path}'[/white_dim].[/white]\n")
     except Exception as e:
         console.print(f"\n[error]Unexpected error:[/error] [white]{e}[/white]\n")
