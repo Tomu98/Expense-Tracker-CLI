@@ -2,7 +2,7 @@ import click
 import csv
 from styles.colors import console
 from utils.budget_helpers import check_budget_warning
-from utils.data_manager import CSV_FILE_PATH, FIELD_NAMES, read_expenses
+from utils.data_manager import CSV_FILE_PATH, FIELD_NAMES, initialize_csv, read_expenses
 from utils.validators import validate_parse_date, validate_amount, validate_category, validate_description
 
 
@@ -24,10 +24,12 @@ def update_expense(id, date, amount, category, description):
         if not (date or category or description or amount):
             raise click.UsageError("You must provide at least one field to update (e.g., --date).")
 
+        initialize_csv()
+
         # Validate that the file exists
         expenses = read_expenses()
         if not expenses:
-            console.print("\n[error]Error:[/error] Expense file not found.\n")
+            console.print("\n[error]Error:[/error] No expenses found. The file is empty.\n")
             return
 
         # Find the ID and update if it exists
