@@ -64,7 +64,7 @@ def delete_budget(date):
 @click.option("--current", is_flag=True, help="Show the current month's budget.")
 @click.option("--all", is_flag=True, help="Show all budgets.")
 @click.option("--date", type=str, help="Show the budget for a specific month or year in 'YYYY' or 'YYYY-MM' format.")
-def budget(current, all, date):
+def view_budget(current, all, date):
     """
     Displays budget information. Allows viewing the current month's budget, all budgets,
     or a specific budget by month and year in 'YYYY' or 'YYYY-MM' format.
@@ -72,12 +72,12 @@ def budget(current, all, date):
     """
     budgets = read_budget()
 
+    if not current and not all and not date:
+        return console.print("\n[warning]Please specify an option:[/warning] [white][white_dim]--current[/white_dim], [white_dim]--all[/white_dim], or [white_dim]--date 'YYYY-MM'/'YYYY'[/white_dim].[/white]\n")
+
     if not budgets:
         console.print("\n[error]No budgets found.[/error]\n")
         return
-
-    if not current and not all and not date:
-        return console.print("\n[warning]Please specify an option:[/warning] [white][white_dim]--current[/white_dim], [white_dim]--all[/white_dim], or [white_dim]--date 'YYYY-MM'/'YYYY'[/white_dim].[/white]\n")
 
     # Validate and parse date
     if date:
