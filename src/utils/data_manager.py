@@ -13,16 +13,58 @@ FIELD_NAMES = ["ID", "Date", "Amount", "Category", "Description"]
 
 def initialize_csv():
     """
-    Initializes the expenses CSV file.
-    Creates the file and writes the header if it doesn't exist.
+    Initializes the expenses CSV file and ensures correct headers.
+    Creates the data directory and CSV file if they don't exist.
+    If the file exists, validates and corrects headers if necessary.
     """
     try:
         CSV_FILE_PATH.parent.mkdir(exist_ok=True)
-        with CSV_FILE_PATH.open("x", newline="", encoding="utf-8") as file:
-            writer = csv.DictWriter(file, fieldnames=FIELD_NAMES)
-            writer.writeheader()
-    except FileExistsError:
-        pass
+        if not CSV_FILE_PATH.exists():
+            with CSV_FILE_PATH.open("w", newline="", encoding="utf-8") as file:
+                writer = csv.DictWriter(file, fieldnames=FIELD_NAMES)
+                writer.writeheader()
+            return
+
+        # Read first line to check if it's a valid header or data
+        file_content = []
+        headers_needed = False
+
+        with CSV_FILE_PATH.open("r", newline="", encoding="utf-8") as file:
+            reader = csv.reader(file)
+            try:
+                first_row = next(reader)
+                # Check if first row is data (has numeric ID) or malformed header
+                try:
+                    int(first_row[0])
+                    file_content.append(first_row)
+                    headers_needed = True
+                except (ValueError, IndexError):
+                    # Not a numeric ID, check if it's the correct header
+                    if first_row != FIELD_NAMES:
+                        headers_needed = True
+            except StopIteration:
+                headers_needed = True
+
+            # Read the rest of the file if it exists
+            file_content.extend(row for row in reader if row)
+
+        # Only rewrite the file if we need to add/fix headers
+        if headers_needed:
+            with CSV_FILE_PATH.open("w", newline="", encoding="utf-8") as file:
+                writer = csv.writer(file)
+                writer.writerow(FIELD_NAMES)
+                writer.writerows(file_content)
+  
+    except Exception as e:
+        console.print(f"[error]Error initializing CSV file:[/error] [white]{e}[/white]")
+        # Ensure the file exists with correct headers even after error
+        try:
+            with CSV_FILE_PATH.open("w", newline="", encoding="utf-8") as file:
+                writer = csv.DictWriter(file, fieldnames=FIELD_NAMES)
+                writer.writeheader()
+        except Exception as e:
+            console.print(f"[error]Critical error creating CSV file:[/error] [white]{e}[/white]")
+            raise
 
 
 def read_expenses():
