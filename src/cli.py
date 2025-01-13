@@ -9,7 +9,7 @@ from commands.update_expense import update_expense
 
 
 @click.group()
-@click.version_option(version="0.16.27", prog_name="Expense Tracker CLI")
+@click.version_option(version="0.16.28", prog_name="Expense Tracker CLI")
 def cli():
     pass
 
