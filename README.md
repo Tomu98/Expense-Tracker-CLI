@@ -50,25 +50,101 @@ Specific inspiration for this project comes from the following link: [Expense Tr
 To use the Expense Tracker CLI, run the following command:
 
    ```bash
-   python -m src/cli <command> [options]
+   python src/cli.py <command> [options]
    ```
 
-Here are the available commands and their options:
-- Add expense: `python -m src/cli add --amount <amount> --category <category> [--date <YYYY-MM-DD>] [--description <description>]`
-- Delete expense: `python -m src/cli delete [--id <id>] [--all]`
-- Update expense: `python -m src/cli update --id <id> [--date <YYYY-MM-DD>] [--amount <amount>] [--category <category>] [--description <description>]`
-- Summary of expenses: `python -m src/cli summary [--date <YYYY-MM>] [--category <category>]`
-- List expenses: `python -m src/cli list [--category <category>] [--from <YYYY-MM-DD>] [--to <YYYY-MM-DD>] [--min <amount>] [--max <amount>]`
-- Set budget: `python -m src/cli set-budget --amount <amount> --date <YYYY-MM>`
-- Delete budget: `python -m src/cli delete-budget --date <YYYY-MM>`
-- View budget: `python -m src/cli view-budget [--current] [--all] [--date <YYYY-MM>]`
-- Export expenses: `python -m src/cli export --output <filename> [--date <YYYY-MM>] [--category <category>] [--include-budget]`
-
-For example, to add a new expense:
+Use the `--help` option to learn about available commands and their usage:
 
    ```bash
-   python -m src/cli add --amount 50.75 --category Groceries --description "Weekly groceries"
+   python src/cli.py --help
+   python src/cli.py <command> --help
    ```
+
+<br>
+
+Here are the available commands and their options:
+
+- ***add:***<br>
+  `--amount`: Required. The amount of the expense.<br>
+  `--category`: Required. The category of the expense.<br>
+  `--date`: Optional. The date of the expense (YYYY-MM-DD). Defaults to today's date if not provided.<br>
+  `--description`: Optional. A description of the expense.<br>
+
+     ```bash
+     python src/cli.py add --amount 10 --category Leisure --description "Buying Project Zomboid :D"
+     ```
+
+- ***delete:***<br>
+  `--id`: Required. The ID of the expense to delete.<br>
+  `--all`: Optional. Delete all expenses.<br>
+
+     ```bash
+     python src/cli.py delete --id 2
+     ```
+
+- ***update:***<br>
+  `--id`: Required. The ID of the expense to update.<br>
+  `--date`: Optional. The new date of the expense (YYYY-MM-DD).<br>
+  `--amount`: Optional. The new amount of the expense.<br>
+  `--category`: Optional. The new category of the expense.<br>
+  `--description`: Optional. The new description of the expense.<br>
+
+     ```bash
+     python src/cli.py update --id 1 --amount 20 --description "A gift for my mom <3"
+     ```
+
+- ***summary:***<br>
+  `--date`: Optional. Filter expenses by date (YYYY-MM).<br>
+  `--category`: Optional. Filter expenses by category.<br>
+
+     ```bash
+     python src/cli.py summary --date 2025-01 --category Others
+     ```
+
+- ***list:***<br>
+  `--category`: Optional. Filter by expense category.<br>
+  `--from`: Optional. Filter expenses from this date onwards (YYYY-MM-DD).<br>
+  `--to`: Optional. Filter expenses up to this date (YYYY-MM-DD).<br>
+  `--min`: Optional. Show expenses above or equal to this amount.<br>
+  `--max`: Optional. Show expenses below or equal to this amount.<br>
+
+     ```bash
+     python src/cli.py list --from 2025-01-13 --to 2024-12-20 --min 20
+     ```
+
+- ***set-budget:***<br>
+  `--amount`: Required. The amount for the budget.<br>
+  `--date`: Required. The date for the budget (YYYY-MM).<br>
+
+     ```bash
+     python src/cli.py set-budget --amount 1000 --date 2025-01
+     ```
+
+- ***delete-budget:***<br>
+  `--date`: Required. The date for the budget (YYYY-MM).<br>
+
+     ```bash
+     python src/cli.py delete-budget --date 2024-12
+     ```
+
+- ***view-budget:***<br>
+  `--current`: Optional. Show the current month's budget.<br>
+  `--all`: Optional. Show all budgets.<br>
+  `--date`: Optional. Show the budget for a specific month or year (YYYY-MM).<br>
+
+     ```bash
+     python src/cli.py view-budget --all
+     ```
+
+- ***export:***<br>
+  `--output`: Required. The name of the exported file.<br>
+  `--date`: Optional. Filter expenses by date (YYYY-MM).<br>
+  `--category`: Optional. Filter expenses by category.<br>
+  `--include-budget`: Optional. Include budget information in the export.<br>
+
+     ```bash
+     python src/cli.py export --output expenses_2025_01.xlsx --date 2025-01 --include-budget
+     ```
 
 
 <br>
